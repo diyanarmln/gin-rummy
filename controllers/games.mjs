@@ -106,6 +106,11 @@ const makeDeck = function () {
   return deck;
 };
 
+/**
+ * 
+ * @param deck 
+ * function to deal cards to player hand
+ */
 const dealPlayerCards = function (deck) {
   let playerHand = [];
   for (let handIndex = 0; handIndex < 11; handIndex += 1){
@@ -126,16 +131,16 @@ const dealPlayerCards = function (deck) {
  * ========================================================
  */
 
-// export default function initGamesController(db) {
+export default function initGamesController(db) {
 
 //   let player1Score = 0;
 //   let player2Score = 0;
 //   let result;
 
-//   // render the main page
-//   const index = (request, response) => {
-//     response.render('games/index');
-//   };
+  // render the main page
+  const index = (request, response) => {
+    response.render('games/index');
+  };
 
 //   // create a new game. Insert a new row in the DB.
 //   const create = async (request, response) => {
@@ -234,9 +239,9 @@ const dealPlayerCards = function (deck) {
 
 //   // return all functions we define in an object
 //   // refer to the routes file above to see this used
-//   return {
+  return {
 //     deal,
 //     create,
-//     index,
-//   };
-// }
+    index,
+  };
+}
