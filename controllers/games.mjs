@@ -106,6 +106,13 @@ const makeDeck = function () {
   return deck;
 };
 
+const dealPlayerCards = function (deck) {
+  let playerHand = [];
+  for (let handIndex = 0; handIndex < 11; handIndex += 1){
+    playerHand.push(deck.pop());
+  }
+}
+
 /*
  * ========================================================
  * ========================================================
@@ -119,117 +126,117 @@ const makeDeck = function () {
  * ========================================================
  */
 
-export default function initGamesController(db) {
+// export default function initGamesController(db) {
 
-  let player1Score = 0;
-  let player2Score = 0;
-  let result;
+//   let player1Score = 0;
+//   let player2Score = 0;
+//   let result;
 
-  // render the main page
-  const index = (request, response) => {
-    response.render('games/index');
-  };
+//   // render the main page
+//   const index = (request, response) => {
+//     response.render('games/index');
+//   };
 
-  // create a new game. Insert a new row in the DB.
-  const create = async (request, response) => {
-    // deal out a new shuffled deck for this game.
-    const cardDeck = shuffleCards(makeDeck());
-    const player1Card = cardDeck.pop();
-    const player2Card = cardDeck.pop();
-    const playerHand = [player1Card, player2Card];
+//   // create a new game. Insert a new row in the DB.
+//   const create = async (request, response) => {
+//     // deal out a new shuffled deck for this game.
+//     const cardDeck = shuffleCards(makeDeck());
+//     const player1Card = cardDeck.pop();
+//     const player2Card = cardDeck.pop();
+//     const playerHand = [player1Card, player2Card];
 
-    if (player1Card.rank > player2Card.rank) {
-      result = 'Player 1 wins!!';
-      player1Score += 1;
-    } else if (player1Card.rank < player2Card.rank) {
-      result = 'Player 2 wins!!';
-      player2Score += 1;
-    } else {
-      result = 'Draw';
-    }
+//     if (player1Card.rank > player2Card.rank) {
+//       result = 'Player 1 wins!!';
+//       player1Score += 1;
+//     } else if (player1Card.rank < player2Card.rank) {
+//       result = 'Player 2 wins!!';
+//       player2Score += 1;
+//     } else {
+//       result = 'Draw';
+//     }
 
-    const newGame = {
-      gameState: {
-        cardDeck,
-        playerHand,
-        result,
-        score: {
-          player1: player1Score,
-          player2: player2Score
-        },
-      },
-    };
+//     const newGame = {
+//       gameState: {
+//         cardDeck,
+//         playerHand,
+//         result,
+//         score: {
+//           player1: player1Score,
+//           player2: player2Score
+//         },
+//       },
+//     };
 
-    try {
-      // run the DB INSERT query
-      const game = await db.Game.create(newGame);
+//     try {
+//       // run the DB INSERT query
+//       const game = await db.Game.create(newGame);
 
-      // send the new game back to the user.
-      // dont include the deck so the user can't cheat
-      response.send({
-        id: game.id,
-        playerHand: game.gameState.playerHand,
-        result: game.gameState.result,
-        score: game.gameState.score,
-      });
-    } catch (error) {
-      response.status(500).send(error);
-    }
-  };
+//       // send the new game back to the user.
+//       // dont include the deck so the user can't cheat
+//       response.send({
+//         id: game.id,
+//         playerHand: game.gameState.playerHand,
+//         result: game.gameState.result,
+//         score: game.gameState.score,
+//       });
+//     } catch (error) {
+//       response.status(500).send(error);
+//     }
+//   };
 
-  // deal two new cards from the deck.
-  const deal = async (request, response) => {
-    try {
-      // get the game by the ID passed in the request
-      const game = await db.Game.findByPk(request.params.id);
+//   // deal two new cards from the deck.
+//   const deal = async (request, response) => {
+//     try {
+//       // get the game by the ID passed in the request
+//       const game = await db.Game.findByPk(request.params.id);
 
-      // make changes to the object
-      const player1Card = game.gameState.cardDeck.pop();
-      const player2Card = game.gameState.cardDeck.pop();
-      const playerHand = [player1Card, player2Card];
+//       // make changes to the object
+//       const player1Card = game.gameState.cardDeck.pop();
+//       const player2Card = game.gameState.cardDeck.pop();
+//       const playerHand = [player1Card, player2Card];
 
-      if (player1Card.rank > player2Card.rank) {
-        game.gameState.result = 'Player 1 wins!!';
-        game.gameState.score.player1 += 1;
-      } else if (player1Card.rank < player2Card.rank) {
-        game.gameState.result = 'Player 2 wins!!';
-        game.gameState.score.player2 += 1;
-      } else {
-        game.gameState.result = 'Draw';
-      }
+//       if (player1Card.rank > player2Card.rank) {
+//         game.gameState.result = 'Player 1 wins!!';
+//         game.gameState.score.player1 += 1;
+//       } else if (player1Card.rank < player2Card.rank) {
+//         game.gameState.result = 'Player 2 wins!!';
+//         game.gameState.score.player2 += 1;
+//       } else {
+//         game.gameState.result = 'Draw';
+//       }
 
-      // update the game with the new info
-      await game.update({
-        gameState: {
-          cardDeck: game.gameState.cardDeck,
-          playerHand,
-          result: game.gameState.result,
-          score: {
-            player1: game.gameState.score.player1,
-            player2: game.gameState.score.player2
-          },
-        },
+//       // update the game with the new info
+//       await game.update({
+//         gameState: {
+//           cardDeck: game.gameState.cardDeck,
+//           playerHand,
+//           result: game.gameState.result,
+//           score: {
+//             player1: game.gameState.score.player1,
+//             player2: game.gameState.score.player2
+//           },
+//         },
 
-      });
+//       });
 
-      // send the updated game back to the user.
-      // dont include the deck so the user can't cheat
-      response.send({
-        id: game.id,
-        playerHand: game.gameState.playerHand,
-        result: game.gameState.result,
-        score: game.gameState.score,
-      });
-    } catch (error) {
-      response.status(500).send(error);
-    }
-  };
+//       // send the updated game back to the user.
+//       // dont include the deck so the user can't cheat
+//       response.send({
+//         id: game.id,
+//         playerHand: game.gameState.playerHand,
+//         result: game.gameState.result,
+//         score: game.gameState.score,
+//       });
+//     } catch (error) {
+//       response.status(500).send(error);
+//     }
+//   };
 
-  // return all functions we define in an object
-  // refer to the routes file above to see this used
-  return {
-    deal,
-    create,
-    index,
-  };
-}
+//   // return all functions we define in an object
+//   // refer to the routes file above to see this used
+//   return {
+//     deal,
+//     create,
+//     index,
+//   };
+// }
