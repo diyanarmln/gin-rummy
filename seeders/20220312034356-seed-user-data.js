@@ -10,15 +10,15 @@ module.exports = {
     const userList = [
 
       {
-        username: 'tom123',
-        email: 'tom@gmail.com',
+        username: 'PlayerX',
+        email: 'comp@gmail.com',
         password: hashedPassword,
         created_at: new Date(),
         updated_at: new Date(),
       },
       {
-        username: 'jerry456',
-        email: 'jerry@gmail.com',
+        username: 'tom123',
+        email: 'tom@gmail.com',
         password: hashedPassword,
         created_at: new Date(),
         updated_at: new Date(),
