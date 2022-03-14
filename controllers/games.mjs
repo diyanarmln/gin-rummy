@@ -46,7 +46,9 @@ const makeDeck = function () {
   // create the empty deck at the beginning
   const deck = [];
 
-  const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+  const suits = ['clubs', 'diamonds', 'hearts', 'spades'];
+
+  let cardOrder = 0;
 
   for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
       // Store the current suit in a variable
@@ -73,6 +75,8 @@ const makeDeck = function () {
           // By default, the card name is the same as rankCounter
           let cardName = `${rankCounter}`;
           let shortForm = `${rankCounter}`;
+          let deadwood = `${rankCounter}`;
+          cardOrder += 1;
 
           // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
           if (cardName === '1') {
@@ -81,22 +85,26 @@ const makeDeck = function () {
           } else if (cardName === '11') {
             cardName = 'jack';
             shortForm = 'J';
+            deadwood = 10;
           } else if (cardName === '12') {
             cardName = 'queen';
             shortForm = 'Q';
+            deadwood = 10;
           } else if (cardName === '13') {
             cardName = 'king';
             shortForm = 'K';
+            deadwood = 10;
           }
 
           // Create a new card with the current name, suit, and rank
           const card = {
             name: cardName,
             suit: currentSuit,
-            rank: rankCounter,
+            rank: cardOrder,
             displayName: shortForm,
             suitSymbol: symbol,
             suitColour: color,
+            deadwoodValue: deadwood,
             discard: false,
           };
 
@@ -112,10 +120,35 @@ const makeDeck = function () {
  * function to deal cards to player hand
  */
 const dealPlayerCards = function (deck) {
-  let playerHand = [];
-  for (let handIndex = 0; handIndex < 11; handIndex += 1){
-    playerHand.push(deck.pop());
+  let playersHand = [];
+  let player1Hand = [];
+  let player2Hand = [];
+
+  for (let handIndex = 0; handIndex < 10; handIndex += 1){
+    player1Hand.push(deck.pop());
+    for (let playerHandIndex = 0; playerHandIndex < 1; playerHandIndex += 1){
+      player2Hand.push(deck.pop());
+    }
   }
+  player1Hand.sort((a, b) => a.rank - b.rank);
+  player2Hand.sort((a, b) => a.rank - b.rank);
+  playersHand = [player1Hand, player2Hand];
+  return playersHand;
+}
+
+ 
+
+const checkStraights = function (playerHand) {
+  
+}
+
+const deadwoodHand = function (playersHand) {
+  // function to find consecutive set of 3 cards in same suit
+
+
+
+  // function to find >= 3 set of cards with same cardName
+  // create new array of remaining cards not meeting above conditions
 }
 
 /*
@@ -133,8 +166,6 @@ const dealPlayerCards = function (deck) {
 
 export default function initGamesController(db) {
 
-//   let player1Score = 0;
-//   let player2Score = 0;
 //   let result;
 
   // render the main page
@@ -142,52 +173,54 @@ export default function initGamesController(db) {
     response.render('games/index');
   };
 
-//   // create a new game. Insert a new row in the DB.
-//   const create = async (request, response) => {
-//     // deal out a new shuffled deck for this game.
-//     const cardDeck = shuffleCards(makeDeck());
-//     const player1Card = cardDeck.pop();
-//     const player2Card = cardDeck.pop();
-//     const playerHand = [player1Card, player2Card];
+  // create a new game. Insert a new row in the DB.
+  // const create = async (request, response) => {
 
-//     if (player1Card.rank > player2Card.rank) {
-//       result = 'Player 1 wins!!';
-//       player1Score += 1;
-//     } else if (player1Card.rank < player2Card.rank) {
-//       result = 'Player 2 wins!!';
-//       player2Score += 1;
-//     } else {
-//       result = 'Draw';
-//     }
+  //   let player1Score = 0; 
+  //   let player2Score = 0; 
+  //   let discardPile = [];
 
-//     const newGame = {
-//       gameState: {
-//         cardDeck,
-//         playerHand,
-//         result,
-//         score: {
-//           player1: player1Score,
-//           player2: player2Score
-//         },
-//       },
-//     };
+  //   // deal out a new shuffled deck for this game.
+  //   const cardDeck = shuffleCards(makeDeck());
+  //   const playersHand = dealPlayerCards(cardDeck);
+  //   discardPile.push(cardDeck.pop());
 
-//     try {
-//       // run the DB INSERT query
-//       const game = await db.Game.create(newGame);
+  //   const newGame = {
+  //     gameState: {
+  //       status: 'started',
+  //       score: {
+  //         player1: player1Score,
+  //         player2: player2Score
+  //       },
+  //       round: {
+  //         cardDeck,
+  //         discardPile,
+  //         playersHand,
+  //         deadwoodValue,
+  //       }
+        
+        
+  //     },
+  //   };
 
-//       // send the new game back to the user.
-//       // dont include the deck so the user can't cheat
-//       response.send({
-//         id: game.id,
-//         playerHand: game.gameState.playerHand,
-//         result: game.gameState.result,
-//         score: game.gameState.score,
-//       });
-//     } catch (error) {
-//       response.status(500).send(error);
-//     }
-//   };
+  //   try {
+  //     // run the DB INSERT query
+  //     const game = await db.Game.create(newGame);
+
+  //     // also need to add user in join table
+
+  //     // send the new game back to the user.
+  //     // dont include the deck so the user can't cheat
+  //     response.send({
+  //       id: game.id,
+  //       playerHand: game.gameState.playerHand,
+  //       result: game.gameState.result,
+  //       score: game.gameState.score,
+  //     });
+  //   } catch (error) {
+  //     response.status(500).send(error);
+  //   }
+  // };
 
 //   // deal two new cards from the deck.
 //   const deal = async (request, response) => {
@@ -237,8 +270,8 @@ export default function initGamesController(db) {
 //     }
 //   };
 
-//   // return all functions we define in an object
-//   // refer to the routes file above to see this used
+  // return all functions we define in an object
+  // refer to the routes file above to see this used
   return {
 //     deal,
 //     create,
