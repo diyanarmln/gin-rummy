@@ -148,7 +148,7 @@ const dealPlayerCards = function (deck) {
 //   return deadwoodHand;
 // }
 
-let testDeck = [
+let testPlayerHand = [
   {
     deadwoodValue: 8,
     discard: false,
