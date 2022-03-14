@@ -75,7 +75,7 @@ const makeDeck = function () {
           // By default, the card name is the same as rankCounter
           let cardName = `${rankCounter}`;
           let shortForm = `${rankCounter}`;
-          let deadwood = `${rankCounter}`;
+          let deadwood = rankCounter;
           cardOrder += 1;
 
           // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
@@ -136,11 +136,120 @@ const dealPlayerCards = function (deck) {
   return playersHand;
 }
 
- 
+// const checkStraights = function (playerHand) {
+//   let deadwoodHand = [];
+//   for (let i = 1; i < playerHand.length - 1; i+1){
+//     if((playerHand[i].rank !== playerHand[i-1].rank + 1) && (playerHand[i].rank !== playerHand[i+1].rank - 1)){
+//       deadwoodHand.push(playerHand[i]);
+//       deadwoodHand.push(playerHand[i+1]);
+//       deadwoodHand.push(playerHand[i-1]);
+//     }
+//   }
+//   return deadwoodHand;
+// }
 
-const checkStraights = function (playerHand) {
-  
-}
+let testDeck = [
+  {
+    deadwoodValue: 8,
+    discard: false,
+    displayName: "8",
+    name: "8",
+    rank: 8,
+    suit: "hearts",
+    suitColour: "red",
+    suitSymbol: "♥️",
+  },
+  {
+    deadwoodValue: 1,
+    discard: false,
+    displayName: "A",
+    name: "ace",
+    rank: 14,
+    suit: "diamonds",
+    suitColour: "red",
+    suitSymbol: "♦️",
+  },
+  {
+    deadwoodValue: 2,
+    discard: false,
+    displayName: "2",
+    name: "2",
+    rank: 15,
+    suit: "diamonds",
+    suitColour: "red",
+    suitSymbol: "♦️",
+  },
+  {
+    deadwoodValue: 3,
+    discard: false,
+    displayName: "3",
+    name: "3",
+    rank: 16,
+    suit: "diamonds",
+    suitColour: "red",
+    suitSymbol: "♦️",
+  },
+  {
+    deadwoodValue: 10,
+    discard: false,
+    displayName: "Q",
+    name: "queen",
+    rank: 25,
+    suit: "diamonds",
+    suitColour: "red",
+    suitSymbol: "♦️",
+  },
+  {
+    deadwoodValue: 1,
+    discard: false,
+    displayName: "A",
+    name: "ace",
+    rank: 27,
+    suit: "clubs",
+    suitColour: "black",
+    suitSymbol: "♣️",
+  },
+  {
+    deadwoodValue: 3,
+    discard: false,
+    displayName: "3",
+    name: "3",
+    rank: 29,
+    suit: "clubs",
+    suitColour: "black",
+    suitSymbol: "♣️",
+  },
+  {
+    deadwoodValue: 6,
+    discard: false,
+    displayName: "6",
+    name: "6",
+    rank: 32,
+    suit: "clubs",
+    suitColour: "black",
+    suitSymbol: "♣️",
+  },
+  {
+    deadwoodValue: 10,
+    discard: false,
+    displayName: "Q",
+    name: "queen",
+    rank: 38,
+    suit: "clubs",
+    suitColour: "black",
+    suitSymbol: "♣️",
+  },
+  {
+    deadwoodValue: 10,
+    discard: false,
+    displayName: "K",
+    name: "king",
+    rank: 39,
+    suit: "clubs",
+    suitColour: "black",
+    suitSymbol: "♣️",
+  },
+]
 
 const deadwoodHand = function (playersHand) {
   // function to find consecutive set of 3 cards in same suit
