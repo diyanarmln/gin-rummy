@@ -356,55 +356,54 @@ export default function initGamesController(db) {
   };
 
   // create a new game. Insert a new row in the DB.
-  // const create = async (request, response) => {
+  const create = async (request, response) => {
 
-  //   let player1Score = 0; 
-  //   let player2Score = 0; 
-  //   let discardPile = [];
+    let player1Score = 0; 
+    let player2Score = 0; 
+    let discardPile = [];
 
-  //   // deal out a new shuffled deck for this game.
-  //   const cardDeck = shuffleCards(makeDeck());
-  //   const playersHand = dealPlayerCards(cardDeck);
-  //   discardPile.push(cardDeck.pop());
-  //   const playersDeadwood = getDeadwoodSum(playersHand);
+    // deal out a new shuffled deck for this game.
+    const cardDeck = shuffleCards(makeDeck());
+    const playersHand = dealPlayerCards(cardDeck);
+    discardPile.push(cardDeck.pop());
+    const playersDeadwoodValue = getDeadwoodSum(playersHand);
     
 
-  //   const newGame = {
-  //     gameState: {
-  //       status: 'started',
-  //       score: {
-  //         player1: player1Score,
-  //         player2: player2Score
-  //       },
-  //       round: {
-  //         cardDeck,
-  //         discardPile,
-  //         playersHand,
-  //         playersDeadwood,
-  //       }
+    const newGame = {
+      gameState: {
+        status: 'started',
+        score: {
+          player1: player1Score,
+          player2: player2Score
+        },
+        round: {
+          cardDeck,
+          discardPile,
+          playersHand,
+          playersDeadwoodValue,
+        }
         
-        
-  //     },
-  //   };
+      },
+    };
 
-  //   try {
-  //     // run the DB INSERT query
-  //     const game = await db.Game.create(newGame);
+    try {
+      // run the DB INSERT query
+      const game = await db.Game.create(newGame);
 
-  //     // also need to add user in join table
+      // also need to add user in join table
 
-  //     // send the new game back to the user.
-  //     // dont include the deck so the user can't cheat
-  //     response.send({
-  //       id: game.id,
-  //       playerHand: game.gameState.playerHand,
-  //       result: game.gameState.result,
-  //       score: game.gameState.score,
-  //     });
-  //   } catch (error) {
-  //     response.status(500).send(error);
-  //   }
-  // };
+      // send the new game back to the user.
+      // dont include the deck so the user can't cheat
+      response.send({
+        id: game.id,
+        playerHand: game.gameState.playerHand,
+        score: game.gameState.score,
+        playerDeadwood: game.gameState.playersDeadwoodValue,
+      });
+    } catch (error) {
+      response.status(500).send(error);
+    }
+  };
 
 //   // deal two new cards from the deck.
 //   const deal = async (request, response) => {
@@ -458,7 +457,7 @@ export default function initGamesController(db) {
   // refer to the routes file above to see this used
   return {
 //     deal,
-//     create,
+    create,
     index,
   };
 }
