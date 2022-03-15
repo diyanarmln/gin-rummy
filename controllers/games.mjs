@@ -11,12 +11,20 @@
  * ========================================================
  */
 
-// get a random index from an array given it's size
+/**
+ * 
+ * @param size 
+ * @returns random number given sample size
+ */
 const getRandomIndex = function (size) {
   return Math.floor(Math.random() * size);
 };
 
-// cards is an array of card objects
+/**
+ * 
+ * @param cards 
+ * @returns shuffled deck
+ */
 const shuffleCards = function (cards) {
   let currentIndex = 0;
 
@@ -42,6 +50,10 @@ const shuffleCards = function (cards) {
   return cards;
 };
 
+/**
+ * 
+ * @returns new deck
+ */
 const makeDeck = function () {
   // create the empty deck at the beginning
   const deck = [];
@@ -115,6 +127,14 @@ const makeDeck = function () {
 };
 
 /**
+ * function to sort hand by rank
+ * @param hand 
+ */
+const sortByRank = function (hand) {
+  hand.sort((a, b) => a.rank - b.rank)
+}
+
+/**
  * 
  * @param deck 
  * function to deal cards to player hand
@@ -130,18 +150,17 @@ const dealPlayerCards = function (deck) {
       player2Hand.push(deck.pop());
     }
   }
-  player1Hand.sort((a, b) => a.rank - b.rank);
-  player2Hand.sort((a, b) => a.rank - b.rank);
+  sortByRank(player1Hand);
+  sortByRank(player2Hand);
   playersHand = [player1Hand, player2Hand];
   return playersHand;
 }
 
-const getKeyByValue = (obj, value) => {
-  Object.keys(obj).find(key => obj[key] >= value);
-}
-
-
-
+/**
+ * function to identify deadwood cards in hand
+ * @param playerHand 
+ * @returns 
+ */
 const getDeadwoodinHand = function (playerHand) {
 
   let deadwoodHand = playerHand.map(a => {return {...a}})
@@ -183,6 +202,19 @@ const getDeadwoodinHand = function (playerHand) {
   }
 
   return deadwoodHand;
+}
+
+/**
+ * 
+ * @param deadwoodCards 
+ * @returns sum of deadwood cards value
+ */
+const sumDeadwoodCards = function (deadwoodCards) {
+  const sum = deadwoodCards.reduce(
+    (previousValue, currentValue) => previousValue + currentValue.deadwoodValue
+    , 0
+  )
+  return sum;
 }
 
 let testPlayerHand = [
@@ -288,15 +320,6 @@ let testPlayerHand = [
   },
 ]
 
-const deadwoodHand = function (playersHand) {
-  // function to find consecutive set of 3 cards in same suit
-
-
-
-  // function to find >= 3 set of cards with same cardName
-  // create new array of remaining cards not meeting above conditions
-}
-
 /*
  * ========================================================
  * ========================================================
@@ -320,53 +343,54 @@ export default function initGamesController(db) {
   };
 
   // create a new game. Insert a new row in the DB.
-  // const create = async (request, response) => {
+  const create = async (request, response) => {
 
-  //   let player1Score = 0; 
-  //   let player2Score = 0; 
-  //   let discardPile = [];
+    let player1Score = 0; 
+    let player2Score = 0; 
+    let discardPile = [];
 
-  //   // deal out a new shuffled deck for this game.
-  //   const cardDeck = shuffleCards(makeDeck());
-  //   const playersHand = dealPlayerCards(cardDeck);
-  //   discardPile.push(cardDeck.pop());
+    // deal out a new shuffled deck for this game.
+    const cardDeck = shuffleCards(makeDeck());
+    const playersHand = dealPlayerCards(cardDeck);
+    discardPile.push(cardDeck.pop());
 
-  //   const newGame = {
-  //     gameState: {
-  //       status: 'started',
-  //       score: {
-  //         player1: player1Score,
-  //         player2: player2Score
-  //       },
-  //       round: {
-  //         cardDeck,
-  //         discardPile,
-  //         playersHand,
-  //         deadwoodValue,
-  //       }
+
+    const newGame = {
+      gameState: {
+        status: 'started',
+        score: {
+          player1: player1Score,
+          player2: player2Score
+        },
+        round: {
+          cardDeck,
+          discardPile,
+          playersHand,
+          deadwoodValue,
+        }
         
         
-  //     },
-  //   };
+      },
+    };
 
-  //   try {
-  //     // run the DB INSERT query
-  //     const game = await db.Game.create(newGame);
+    try {
+      // run the DB INSERT query
+      const game = await db.Game.create(newGame);
 
-  //     // also need to add user in join table
+      // also need to add user in join table
 
-  //     // send the new game back to the user.
-  //     // dont include the deck so the user can't cheat
-  //     response.send({
-  //       id: game.id,
-  //       playerHand: game.gameState.playerHand,
-  //       result: game.gameState.result,
-  //       score: game.gameState.score,
-  //     });
-  //   } catch (error) {
-  //     response.status(500).send(error);
-  //   }
-  // };
+      // send the new game back to the user.
+      // dont include the deck so the user can't cheat
+      response.send({
+        id: game.id,
+        playerHand: game.gameState.playerHand,
+        result: game.gameState.result,
+        score: game.gameState.score,
+      });
+    } catch (error) {
+      response.status(500).send(error);
+    }
+  };
 
 //   // deal two new cards from the deck.
 //   const deal = async (request, response) => {
