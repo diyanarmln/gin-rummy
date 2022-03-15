@@ -136,24 +136,61 @@ const dealPlayerCards = function (deck) {
   return playersHand;
 }
 
-// const checkStraights = function (playerHand) {
-//   let deadwoodHand = [];
-//   for (let i = 1; i < playerHand.length - 1; i+1){
-//     if((playerHand[i].rank !== playerHand[i-1].rank + 1) && (playerHand[i].rank !== playerHand[i+1].rank - 1)){
-//       deadwoodHand.push(playerHand[i]);
-//       deadwoodHand.push(playerHand[i+1]);
-//       deadwoodHand.push(playerHand[i-1]);
-//     }
-//   }
-//   return deadwoodHand;
-// }
+const getKeyByValue = (obj, value) => {
+  Object.keys(obj).find(key => obj[key] >= value);
+}
+
+
+
+const getDeadwoodinHand = function (playerHand) {
+
+  let deadwoodHand = playerHand.map(a => {return {...a}})
+  // remove straights from deadwood
+  for (let i = 1; i < playerHand.length - 1; i+=1){
+    if((playerHand[i].rank === playerHand[i-1].rank + 1) && (playerHand[i].rank === playerHand[i+1].rank - 1)){
+      deadwoodHand.splice(i+1, 1);
+      deadwoodHand.splice(i, 1);
+      deadwoodHand.splice(i-1, 1);
+      
+    }
+  }
+
+  // remove 3 of same card from deadwood (tally)
+ let cardNameTally = {};
+  let xOfAKind = [];
+
+  for (let i = 0; i < deadwoodHand.length; i+=1){
+    const cardName = deadwoodHand[i].name;
+    if (cardName in cardNameTally){
+      cardNameTally[cardName] += 1;
+      if(cardNameTally[cardName] >= 3){
+        xOfAKind.push(cardName);
+      }
+    }
+    else {
+      cardNameTally[cardName] = 1;
+    }
+  }
+
+  for(let i = 0; i < xOfAKind.length; i += 1){
+    for(let j = 0; j < deadwoodHand.length; j+= 1){
+      console.log(deadwoodHand[j].name, xOfAKind[i]);
+
+      if(deadwoodHand[j].name === xOfAKind[i]){
+        deadwoodHand.splice(j, 1);
+      }
+    }
+  }
+
+  return deadwoodHand;
+}
 
 let testPlayerHand = [
   {
     deadwoodValue: 8,
     discard: false,
-    displayName: "8",
-    name: "8",
+    displayName: "Q",
+    name: "queen",
     rank: 8,
     suit: "hearts",
     suitColour: "red",
