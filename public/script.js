@@ -147,15 +147,18 @@ const initGameBoardDom = (gameData) => {
   playingDeck.classList.add('card-deck');
   gameFunctionsContainer.appendChild(playingDeck);
 
-  const discardPile = createContainer('cardBack');
-  discardPile.classList.add('card-deck');
+  const discardPile = createContainer('discardPile');
+  discardPile.classList.add('discard-deck');
+  discardPile.style.marginRight = 0;
+  const discardCardForPicking = showCard(gameData.discardCardForPicking);
   gameFunctionsContainer.appendChild(discardPile);
+  discardPile.appendChild(discardCardForPicking);
 
   gameFunctionsContainer.appendChild(rightButtoncontainer);
 
   // bottom section of game board
   const playerHandContainer = createContainer('playerHandContainer', 'yellow');
-  playerHandContainer.classList.add('card-container', 'hand-position');
+  playerHandContainer.classList.add('card-container');
   boardBottomSection.appendChild(playerHandContainer);
   
   let playerHand = gameData.playerHand[1];
@@ -167,7 +170,7 @@ const initGameBoardDom = (gameData) => {
 
   const deadwoodCounter = createContainer('deadwoodCounter');
   deadwoodCounter.innerText = `Deadwood: ${gameData.playerDeadwood[1]}`
-  // deadwoodCounter.classList.add('deadwoodContainer')
+  deadwoodCounter.classList.add('deadwoodContainer')
   boardBottomSection.appendChild(deadwoodCounter);
 
   gameContainer.appendChild(boardUpperSection);

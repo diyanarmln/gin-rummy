@@ -398,6 +398,7 @@ export default function initGamesController(db) {
         playerHand: game.gameState.round.playersHand,
         score: game.gameState.score,
         playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        discardCardForPicking: game.gameState.round.discardPile[discardPile.length - 1],
       });
     } catch (error) {
       response.status(500).send(error);
