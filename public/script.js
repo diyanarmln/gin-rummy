@@ -43,3 +43,44 @@ const createButton = (btnId, btnText, btnCallback) => {
   newBtn.addEventListener('click', btnCallback);
   return newBtn;
 };
+
+const showCard = (card) => {
+
+    const cardElement = document.createElement('div');
+    const colorClass = card.suitColour;
+
+    // --- show card details in top left corner of card
+
+    const suitNameTop = document.createElement('div');
+    suitNameTop.classList.add('card-topleft');
+    cardElement.appendChild(suitNameTop);
+
+    const cardNameTop = document.createElement('div');
+    cardNameTop.innerText = card.displayName;
+    cardNameTop.classList.add('card-corner-rank', `${colorClass}`);
+    suitNameTop.appendChild(cardNameTop);
+
+    const cardSuitTop = document.createElement('div');
+    cardSuitTop.classList.add('card-corner-suit', 'suitSize');
+    cardSuitTop.innerText = card.suitSymbol;
+    suitNameTop.appendChild(cardSuitTop);
+
+    // === show card details in bottom right corner of card
+
+    const suitNameBottom = document.createElement('div');
+    suitNameBottom.classList.add('card-bottomright');
+    cardElement.appendChild(suitNameBottom);
+
+    const cardNameBottom = document.createElement('div');
+    cardNameBottom.innerText = card.displayName;
+    cardNameBottom.classList.add('card-corner-rank', `${colorClass}`);
+    suitNameBottom.appendChild(cardNameBottom);
+
+    const cardSuitBottom = document.createElement('div');
+    cardSuitBottom.classList.add('card-corner-suit', 'suitSize');
+    cardSuitBottom.innerText = card.suitSymbol;
+    suitNameBottom.appendChild(cardSuitBottom);
+
+    cardElement.classList.add('card');
+
+};
