@@ -46,42 +46,48 @@ const createButton = (btnId, btnText, btnCallback) => {
 
 const showCard = (card) => {
 
-    const cardElement = document.createElement('div');
-    const colorClass = card.suitColour;
+  const cardDiv = createContainer('cardDiv', 'white');
+  cardDiv.classList.add('card-front');
 
-    // --- show card details in top left corner of card
+  const cardElement = document.createElement('div', 'white');
+  cardDiv.appendChild(cardElement);
+  const colorClass = card.suitColour;
 
-    const suitNameTop = document.createElement('div');
-    suitNameTop.classList.add('card-topleft');
-    cardElement.appendChild(suitNameTop);
+  // --- show card details in top left corner of card
 
-    const cardNameTop = document.createElement('div');
-    cardNameTop.innerText = card.displayName;
-    cardNameTop.classList.add('card-corner-rank', `${colorClass}`);
-    suitNameTop.appendChild(cardNameTop);
+  const suitNameTop = document.createElement('div');
+  suitNameTop.classList.add('card-topleft');
+  cardElement.appendChild(suitNameTop);
 
-    const cardSuitTop = document.createElement('div');
-    cardSuitTop.classList.add('card-corner-suit', 'suitSize');
-    cardSuitTop.innerText = card.suitSymbol;
-    suitNameTop.appendChild(cardSuitTop);
+  const cardNameTop = document.createElement('div');
+  cardNameTop.innerText = card.displayName;
+  cardNameTop.classList.add('card-corner-rank', `${colorClass}`);
+  suitNameTop.appendChild(cardNameTop);
 
-    // === show card details in bottom right corner of card
+  const cardSuitTop = document.createElement('div');
+  cardSuitTop.classList.add('card-corner-suit', 'suitSize');
+  cardSuitTop.innerText = card.suitSymbol;
+  suitNameTop.appendChild(cardSuitTop);
 
-    const suitNameBottom = document.createElement('div');
-    suitNameBottom.classList.add('card-bottomright');
-    cardElement.appendChild(suitNameBottom);
+  // === show card details in bottom right corner of card
 
-    const cardNameBottom = document.createElement('div');
-    cardNameBottom.innerText = card.displayName;
-    cardNameBottom.classList.add('card-corner-rank', `${colorClass}`);
-    suitNameBottom.appendChild(cardNameBottom);
+  const suitNameBottom = document.createElement('div');
+  suitNameBottom.classList.add('card-bottomright');
+  cardElement.appendChild(suitNameBottom);
 
-    const cardSuitBottom = document.createElement('div');
-    cardSuitBottom.classList.add('card-corner-suit', 'suitSize');
-    cardSuitBottom.innerText = card.suitSymbol;
-    suitNameBottom.appendChild(cardSuitBottom);
+  const cardNameBottom = document.createElement('div');
+  cardNameBottom.innerText = card.displayName;
+  cardNameBottom.classList.add('card-corner-rank', `${colorClass}`);
+  suitNameBottom.appendChild(cardNameBottom);
 
-    cardElement.classList.add('card');
+  const cardSuitBottom = document.createElement('div');
+  cardSuitBottom.classList.add('card-corner-suit', 'suitSize');
+  cardSuitBottom.innerText = card.suitSymbol;
+  suitNameBottom.appendChild(cardSuitBottom);
+
+  cardElement.classList.add('card');
+
+  return cardDiv;
 
 };
 
@@ -103,7 +109,7 @@ const showCard = (card) => {
 const gameContainer = document.getElementById('game-container')
 
 
-const initGameBoardDom = () => {
+const initGameBoardDom = (gameData) => {
 
   const boardUpperSection = createContainer('boardUpperSection', 'blue');
   const boardMiddleSection = createContainer('boardMiddleSection', 'green');
@@ -151,11 +157,12 @@ const initGameBoardDom = () => {
   const playerHandContainer = createContainer('playerHandContainer', 'yellow');
   playerHandContainer.classList.add('card-container', 'hand-position');
   boardBottomSection.appendChild(playerHandContainer);
+  
+  let playerHand = gameData.playerHand[1];
 
-  for(let i = 0; i < 10; i += 1) {
-    const cardBack = createContainer('cardBack');
-    cardBack.classList.add('card-back')
-    playerHandContainer.appendChild(cardBack);
+  for(let i = 0; i < playerHand.length; i += 1) {
+    const cardFront = showCard(playerHand[i]);
+    playerHandContainer.appendChild(cardFront);
   }
 
   gameContainer.appendChild(boardUpperSection);
@@ -173,7 +180,7 @@ const createGame = function () {
       
       // display it out to the user
       // runGame(currentGame);
-      initGameBoardDom();
+      initGameBoardDom(currentGame);
       createGameBtn.remove();
 
       
