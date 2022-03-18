@@ -98,7 +98,7 @@ const initGameBoardDom = () => {
 
   // upper section of game board
   const opponentHandContainer = createContainer('opponentHandContainer', 'yellow');
-  opponentHandContainer.classList.add('card-container');
+  opponentHandContainer.classList.add('card-container', 'hand-position');
   boardUpperSection.appendChild(opponentHandContainer);
 
   for(let i = 0; i < 10; i += 1) {
@@ -107,9 +107,36 @@ const initGameBoardDom = () => {
     opponentHandContainer.appendChild(cardBack);
   }
 
+  // middle section of game board
+  const gameFunctionsContainer = createContainer('gameFunctionsContainer');
+  gameFunctionsContainer.classList.add('card-container', 'playing-deck-container');
+  boardMiddleSection.appendChild(gameFunctionsContainer);
+
+  const leftButtonContainer = createContainer('leftButtonContainer', 'beige');
+  leftButtonContainer.classList.add('playing-deck-btn-container');
+  const ginBtn = createButton('ginBtn', 'Gin');
+  leftButtonContainer.appendChild(ginBtn);
+
+  const rightButtoncontainer = createContainer('rightButtoncontainer', 'beige');
+  rightButtoncontainer.classList.add('playing-deck-btn-container')
+  const passBtn = createButton('passBtn', 'Pass');
+  rightButtoncontainer.appendChild(passBtn);
+
+  gameFunctionsContainer.appendChild(leftButtonContainer);
+
+  const playingDeck = createContainer('cardBack');
+  playingDeck.classList.add('card-deck');
+  gameFunctionsContainer.appendChild(playingDeck);
+
+  const discardPile = createContainer('cardBack');
+  discardPile.classList.add('card-deck');
+  gameFunctionsContainer.appendChild(discardPile);
+
+  gameFunctionsContainer.appendChild(rightButtoncontainer);
+
   // bottom section of game board
   const playerHandContainer = createContainer('playerHandContainer', 'yellow');
-  playerHandContainer.classList.add('card-container');
+  playerHandContainer.classList.add('card-container', 'hand-position');
   boardBottomSection.appendChild(playerHandContainer);
 
   for(let i = 0; i < 10; i += 1) {

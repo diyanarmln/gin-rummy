@@ -58,3 +58,34 @@ body {
 .card-container:last-child {
   flex: 0 0 auto;
 }
+
+.card-deck {
+  margin: 10px 9px;
+  /* --card-width: 5em; */
+  border-style: solid;
+  border-color: #eceee3;
+  /* border-width: 0.5px; */
+  /* background-color: #c56c86; */
+  background-image: url("https://wallpaperaccess.com/full/1800451.jpg");
+  /* margin-right: calc(25px - var(--card-width)); */
+  /* float: left; */
+  background-size: cover;
+  border-radius: 0.25em;
+  display: inline-block;
+  min-height: 7em;
+  max-height: 7em;
+  width: 5em;
+  padding: 10px;
+}
+
+.playing-deck-container {
+  align-items: center;
+}
+
+.playing-deck-btn-container {
+  margin: 10px 50px;
+}
+
+.hand-position {
+  margin-right: 4em;
+}
