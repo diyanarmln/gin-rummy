@@ -165,6 +165,11 @@ const initGameBoardDom = (gameData) => {
     playerHandContainer.appendChild(cardFront);
   }
 
+  const deadwoodCounter = createContainer('deadwoodCounter');
+  deadwoodCounter.innerText = `Deadwood: ${gameData.playerDeadwood[1]}`
+  // deadwoodCounter.classList.add('deadwoodContainer')
+  boardBottomSection.appendChild(deadwoodCounter);
+
   gameContainer.appendChild(boardUpperSection);
   gameContainer.appendChild(boardMiddleSection);
   gameContainer.appendChild(boardBottomSection);
