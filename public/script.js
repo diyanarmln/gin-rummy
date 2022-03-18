@@ -15,7 +15,7 @@ const createContainer = (containerId, containerColor) => {
   const newDiv = document.createElement('div');
   newDiv.id = containerId;
   newDiv.style.backgroundColor = containerColor;
-  document.body.appendChild(newDiv);
+  // document.body.appendChild(newDiv);
   return newDiv;
 };
 
@@ -84,3 +84,32 @@ const showCard = (card) => {
     cardElement.classList.add('card');
 
 };
+
+
+
+const gameContainer = document.getElementById('game-container')
+
+
+const initGameBoardDom = () => {
+
+  const boardUpperSection = createContainer('boardUpperSection', 'blue');
+  const boardMiddleSection = createContainer('boardMiddleSection', 'green');
+  const boardBottomSection = createContainer('boardBottomSection', 'pink');
+
+  // upper section of game board
+  const opponentHandContainer = createContainer('opponentHandContainer', 'yellow');
+  opponentHandContainer.classList.add('card-container');
+  boardUpperSection.appendChild(opponentHandContainer);
+
+  for(let i = 0; i < 10; i += 1) {
+    const cardBack = createContainer('cardBack');
+    cardBack.classList.add('card-back')
+    opponentHandContainer.appendChild(cardBack);
+  }
+
+  gameContainer.appendChild(boardUpperSection);
+  gameContainer.appendChild(boardMiddleSection);
+  gameContainer.appendChild(boardBottomSection);
+}
+
+initGameBoardDom();

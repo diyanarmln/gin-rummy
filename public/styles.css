@@ -1,15 +1,6 @@
-/*
- * ========================================================
- * ========================================================
- * ========================================================
- * ========================================================
- *
- *                  CARD RELATED CSS
- *
- * ========================================================
- * ========================================================
- * ========================================================
- */
+body {
+  background-color: pink;
+}
 
 .red {
   color: red;
@@ -37,4 +28,31 @@
 
 .suitSize {
   font-size: 9px;
+}
+
+.card-back {
+  margin: 10px 9px;
+  --card-width: 5em;
+  border-style: solid;
+  border-color: #eceee3;
+  /* border-width: 0.5px; */
+  /* background-color: #c56c86; */
+  background-image: url("https://wallpaperaccess.com/full/1800451.jpg");
+  margin-right: calc(25px - var(--card-width));
+  float: left;
+  background-size: cover;
+  border-radius: 0.25em;
+  /* display: inline-block; */
+  min-height: 7em;
+  max-height: 7em;
+  width: 5em;
+  padding: 10px;
+}
+
+.card-container {
+  flex: 1 0 0;
+  overflow-x: hidden;
+}
+.card-container:last-child {
+  flex: 0 0 auto;
 }

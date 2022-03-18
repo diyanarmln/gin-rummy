@@ -8,11 +8,25 @@ export default function bindRoutes(app) {
   const UserController = initUsersController(db);
   // main page
   app.get('/', GamesController.index);
-  // create a new game
-  app.post('/games', GamesController.create);
-  // update a game with new cards
-  app.put('/games/:id/deal', GamesController.deal);
+  // create a new game and round
+  // app.post('/games', GamesController.createGame);
+  // create a new round
+  // app.post('/games/:gameId/:roundId', GamesController.createRound);
+  // update round when player pass
 
+  // update round when player draws from deck
+
+  // update round when player draws from discard pile
+
+  // update round when player discards from hand
+  
+  // update round and game when player knocks
+
+  // update round and game when player gins
+
+  // update round and game when player bigGins
+
+  // user login
   app.get('/user', UserController.dashboard);
   app.post('/login', UserController.login);
 }
