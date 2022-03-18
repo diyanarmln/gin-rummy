@@ -9,7 +9,7 @@ export default function bindRoutes(app) {
   // main page
   app.get('/', GamesController.index);
   // create a new game and round
-  // app.post('/games', GamesController.createGame);
+  app.post('/games', GamesController.createGame);
   // create a new round
   // app.post('/games/:gameId/:roundId', GamesController.createRound);
   // update round when player pass

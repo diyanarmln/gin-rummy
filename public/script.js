@@ -87,6 +87,19 @@ const showCard = (card) => {
 
 
 
+/*
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ *
+ *                  Game Helper Functions
+ *
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ */
+
 const gameContainer = document.getElementById('game-container')
 
 
@@ -145,10 +158,45 @@ const initGameBoardDom = () => {
     playerHandContainer.appendChild(cardBack);
   }
 
-
   gameContainer.appendChild(boardUpperSection);
   gameContainer.appendChild(boardMiddleSection);
   gameContainer.appendChild(boardBottomSection);
 }
 
-initGameBoardDom();
+const createGame = function () {
+  // Make a request to create a new game
+  axios.post('/games')
+    .then((response) => {
+      // set the global value to the new game.
+      currentGame = response.data;
+      console.log(response);
+      
+      // display it out to the user
+      // runGame(currentGame);
+      initGameBoardDom();
+      createGameBtn.remove();
+
+      
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+    });
+};
+
+
+/*
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ *
+ *                  Initial Screen
+ *
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ */
+
+const createGameBtn = createButton('createGameBtn', 'createGameBtn', createGame)
+document.body.appendChild(createGameBtn);

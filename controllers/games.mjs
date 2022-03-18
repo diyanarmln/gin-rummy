@@ -356,7 +356,7 @@ export default function initGamesController(db) {
   };
 
   // create a new game. Insert a new row in the DB.
-  const create = async (request, response) => {
+  const createGame = async (request, response) => {
 
     let player1Score = 0; 
     let player2Score = 0; 
@@ -381,8 +381,7 @@ export default function initGamesController(db) {
           discardPile,
           playersHand,
           playersDeadwoodValue,
-        }
-        
+        },
       },
     };
 
@@ -396,9 +395,9 @@ export default function initGamesController(db) {
       // dont include the deck so the user can't cheat
       response.send({
         id: game.id,
-        playerHand: game.gameState.playerHand,
+        playerHand: game.gameState.round.playersHand,
         score: game.gameState.score,
-        playerDeadwood: game.gameState.playersDeadwoodValue,
+        playerDeadwood: game.gameState.round.playersDeadwoodValue,
       });
     } catch (error) {
       response.status(500).send(error);
@@ -457,7 +456,7 @@ export default function initGamesController(db) {
   // refer to the routes file above to see this used
   return {
 //     deal,
-    create,
+    createGame,
     index,
   };
 }
