@@ -50,8 +50,10 @@ body {
 }
 
 .card-container {
+  display: flex;
   flex: 1 0 0;
   overflow-x: hidden;
+  justify-content: center;
 }
 .card-container:last-child {
   flex: 0 0 auto;
