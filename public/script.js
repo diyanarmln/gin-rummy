@@ -107,6 +107,18 @@ const initGameBoardDom = () => {
     opponentHandContainer.appendChild(cardBack);
   }
 
+  // bottom section of game board
+  const playerHandContainer = createContainer('playerHandContainer', 'yellow');
+  playerHandContainer.classList.add('card-container');
+  boardBottomSection.appendChild(playerHandContainer);
+
+  for(let i = 0; i < 10; i += 1) {
+    const cardBack = createContainer('cardBack');
+    cardBack.classList.add('card-back')
+    playerHandContainer.appendChild(cardBack);
+  }
+
+
   gameContainer.appendChild(boardUpperSection);
   gameContainer.appendChild(boardMiddleSection);
   gameContainer.appendChild(boardBottomSection);
