@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import db from './models/index.mjs';
 
 import initGamesController from './controllers/games.mjs';
@@ -7,7 +8,9 @@ export default function bindRoutes(app) {
   const GamesController = initGamesController(db);
   const UserController = initUsersController(db);
   // main page
-  app.get('/', GamesController.index);
+  app.get('/', (request, response) => {
+    response.sendFile(resolve('dist', 'main.html'));
+  });
   // create a new game and round
   app.post('/games', GamesController.createGame);
   // create a new round

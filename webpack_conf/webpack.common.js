@@ -4,6 +4,7 @@ const path = require('path');
 module.exports = {
   plugins: [
     new MiniCssExtractPlugin(),
+    new HtmlWebpackPlugin({template: './src/main.html'})
   ],
   output: {
     filename: '[name]-[contenthash].bundle.js',

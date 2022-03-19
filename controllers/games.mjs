@@ -351,9 +351,9 @@ export default function initGamesController(db) {
 //   let result;
 
   // render the main page
-  const index = (request, response) => {
-    response.sendFile(resolve('dist', 'main.html'))
-  };
+  // const index = (request, response) => {
+  //   response.sendFile(resolve('dist', 'main.html'));
+  // };
 
   // create a new game. Insert a new row in the DB.
   const createGame = async (request, response) => {
@@ -458,6 +458,6 @@ export default function initGamesController(db) {
   return {
 //     deal,
     createGame,
-    index,
+    // index,
   };
 }

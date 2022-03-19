@@ -310,4 +310,4 @@ const createGame = function () {
  */
 
 const createGameBtn = createButton('createGameBtn', 'createGameBtn', createGame)
-document.body.appendChild(createGameBtn);
+gameContainer.appendChild(createGameBtn);
