@@ -151,6 +151,8 @@ const initGameBoardDom = (gameData) => {
   discardPile.classList.add('discard-deck');
   discardPile.style.marginRight = 0;
   const discardCardForPicking = showCard(gameData.discardCardForPicking);
+  discardCardForPicking.classList.remove('card-front');
+  discardCardForPicking.classList.add('discard-card-front');
   gameFunctionsContainer.appendChild(discardPile);
   discardPile.appendChild(discardCardForPicking);
 
