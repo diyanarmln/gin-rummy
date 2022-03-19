@@ -91,6 +91,19 @@ const showCard = (card) => {
 
 };
 
+/*
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ *
+ *                  DOM Elements
+ *
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ */
+
 
 
 /*
@@ -210,6 +223,77 @@ const createGame = function () {
       console.log(error);
     });
 };
+
+// webpack
+
+// disable and hide buttons by default
+
+// create game
+// show pass button
+// enable pass button
+
+// pass button
+// hide pass button
+// computer turn
+// random action to pass or not (run draw deck or drawdiscard callback to controller)
+// player turn
+// enable draw deck
+// enable draw discard
+
+// click draw deck
+// add card to player hand (controller)
+// enable discard of cards from hand
+// disable draw deck
+// disable draw discard
+// computer turn
+// random action to draw from deck or discard
+// discard highest from deadwood
+// check deadwood value 
+// enable/show gin if deadwood.length = 1
+// enable/show big gin if deadwood.length = 0
+// enable/show knock if deadwood sum <= 10
+
+// click drawDiscard
+// add card to player hand (controller)
+// enable discard of cards from hand
+// disable draw deck
+// disable draw discard
+// computer turn
+// random action to draw from deck or discard
+// discard highest from deadwood
+// check deadwood value 
+// enable/show gin if deadwood.length = 1
+// enable/show big gin if deadwood.length = 0
+// enable/show knock if deadwood sum <= 10
+
+// click discardFromHand
+// push to discard pile (controller)
+// disable discardFromHand
+// recalculate deadwood
+// other player turn
+// enable draw deck
+// enable draw discard
+
+// click gin / big gin
+// discard if gin and recalculate deadwood value
+// add to player score (contoller)
+// check if playerScore above 100 => endGame, show winner, update winner record
+// else
+// initialise new round (controller)
+// create round
+
+// click knock
+// calculate player score from deadwood
+// check if playerScore above 100 => endGame, show winner, update winner record
+// else
+// initialise new round (controller)
+// create round
+
+
+
+ 
+
+
 
 
 /*

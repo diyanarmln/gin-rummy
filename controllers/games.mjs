@@ -352,7 +352,7 @@ export default function initGamesController(db) {
 
   // render the main page
   const index = (request, response) => {
-    response.render('games/index');
+    response.sendFile(resolve('dist', 'main.html'))
   };
 
   // create a new game. Insert a new row in the DB.
