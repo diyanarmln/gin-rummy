@@ -134,11 +134,13 @@ const initGameBoardDom = (gameData) => {
   const leftButtonContainer = createContainer('leftButtonContainer', 'beige');
   leftButtonContainer.classList.add('playing-deck-btn-container');
   const ginBtn = createButton('ginBtn', 'Gin');
+  ginBtn.classList.add('btn');
   leftButtonContainer.appendChild(ginBtn);
 
   const rightButtoncontainer = createContainer('rightButtoncontainer', 'beige');
   rightButtoncontainer.classList.add('playing-deck-btn-container')
   const passBtn = createButton('passBtn', 'Pass');
+  passBtn.classList.add('btn');
   rightButtoncontainer.appendChild(passBtn);
 
   gameFunctionsContainer.appendChild(leftButtonContainer);
