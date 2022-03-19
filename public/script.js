@@ -114,6 +114,7 @@ const initGameBoardDom = (gameData) => {
   const boardUpperSection = createContainer('boardUpperSection', 'blue');
   const boardMiddleSection = createContainer('boardMiddleSection', 'green');
   const boardBottomSection = createContainer('boardBottomSection', 'pink');
+  const boardGameHelpText = createContainer('boardGameHelpText', 'green');
 
   // upper section of game board
   const opponentHandContainer = createContainer('opponentHandContainer', 'yellow');
@@ -160,6 +161,12 @@ const initGameBoardDom = (gameData) => {
 
   gameFunctionsContainer.appendChild(rightButtoncontainer);
 
+  // game help text container
+  const gameHelpText = createContainer('gameHelpText');
+  gameHelpText.innerText = 'test';
+  gameHelpText.classList.add('gameHelpText');
+  boardGameHelpText.appendChild(gameHelpText);
+
   // bottom section of game board
   const playerHandContainer = createContainer('playerHandContainer', 'yellow');
   playerHandContainer.classList.add('card-container');
@@ -179,6 +186,7 @@ const initGameBoardDom = (gameData) => {
 
   gameContainer.appendChild(boardUpperSection);
   gameContainer.appendChild(boardMiddleSection);
+  gameContainer.appendChild(boardGameHelpText);
   gameContainer.appendChild(boardBottomSection);
 }
 

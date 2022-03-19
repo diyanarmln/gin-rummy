@@ -171,3 +171,8 @@ body {
   /* border-radius: 1em; */
   border-style: solid;
 }
+
+.gameHelpText {
+  text-align: center;
+  padding-bottom: 0.5em;
+}
