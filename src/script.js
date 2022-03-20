@@ -130,8 +130,21 @@ const passingDiscardCard = () => {
   gameHelpText.innerText = `Your turn`
   }, 3000);
   
-  // enable draw deck
-  // enable draw from discard
+  playingDeck.style.pointerEvents = 'auto';
+  discardPile.style.pointerEvents = 'auto';
+  
+}
+
+const drawingFromDeck = () => {
+  console.log('success draw from deck')
+}
+
+const drawingFromDiscard = () => {
+    console.log('success draw from discard')
+}
+
+const clickToDiscard = () => {
+  console.log('success click on card in hand')
 }
 
 /*
@@ -186,11 +199,15 @@ gameFunctionsContainer.appendChild(leftButtonContainer);
 
 const playingDeck = createContainer('cardBack');
 playingDeck.classList.add('card-deck');
+playingDeck.addEventListener('click', drawingFromDeck);
+playingDeck.style.pointerEvents = 'none';
 gameFunctionsContainer.appendChild(playingDeck);
 
 const discardPile = createContainer('discardPile');
 discardPile.classList.add('discard-deck');
 discardPile.style.marginRight = 0;
+discardPile.addEventListener('click', drawingFromDiscard);
+discardPile.style.pointerEvents = 'none';
 gameFunctionsContainer.appendChild(discardPile);
 
 gameFunctionsContainer.appendChild(rightButtoncontainer);
@@ -260,6 +277,13 @@ const refreshGameBoard = (gameData ) => {
 
   for(let i = 0; i < playerHand.length; i += 1) {
     const cardFront = showCard(playerHand[i]);
+    cardFront.addEventListener('click', (event) => {
+    // we will want to pass in the card element so
+    // that we can change how it looks on screen, i.e.,
+    // "turn the card over"
+      clickToDiscard(event.currentTarget, i);
+      console.log(event.currentTarget);
+    });
     playerHandContainer.appendChild(cardFront);
   }
 
