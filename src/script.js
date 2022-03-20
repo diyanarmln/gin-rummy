@@ -167,7 +167,7 @@ const drawingFromDeck = () => {
       console.log(response.data);
       
       // display it out to the user
-      refreshGameBoard(currentGame);
+      refreshGameBoard(currentGame, true);
     })
     .catch((error) => {
       // handle error
@@ -190,7 +190,7 @@ const drawingFromDiscard = () => {
       console.log(response.data);
       
       // display it out to the user
-      refreshGameBoard(currentGame);
+      refreshGameBoard(currentGame, true);
     })
     .catch((error) => {
       // handle error
@@ -205,7 +205,23 @@ const drawingFromDiscard = () => {
 }
 
 const clickToDiscard = (card, index) => {
-  console.log('success click on card in hand')
+  // setTimeout(() => {
+    axios.put(`/games/${currentGame.id}/discardFromHand/${index}`)
+    .then((response) => {
+      // set the global value to the new game.
+      currentGame = response.data;
+      console.log(response.data);
+      
+      // display it out to the user
+      refreshGameBoard(currentGame, true);
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+    });
+  
+  gameHelpText.innerText = `Discard a card from your hand`
+  // }, 1000);
 }
 
 /*
@@ -323,13 +339,15 @@ const initGameBoardDom = (gameData) => {
   discardCardForPicking.classList.add('discard-card-front');
   discardPile.appendChild(discardCardForPicking);
 
+  discardPile.style.pointerEvents = 'auto';
+
   gameContainer.appendChild(boardUpperSection);
   gameContainer.appendChild(boardMiddleSection);
   gameContainer.appendChild(boardGameHelpText);
   gameContainer.appendChild(boardBottomSection);
 }
 
-const refreshGameBoard = (gameData, canDiscard) => {
+const refreshGameBoard = (gameData, canDiscardHand) => {
 
   playerHandContainer.innerHTML = "";
   discardPile.innerHTML = "";
@@ -338,7 +356,7 @@ const refreshGameBoard = (gameData, canDiscard) => {
 
   for(let i = 0; i < playerHand.length; i += 1) {
     const cardFront = showCard(playerHand[i]);
-    // if (canDiscard) {
+    if (canDiscardHand === true) {
       cardFront.addEventListener('click', (event) => {
       // we will want to pass in the card element so
       // that we can change how it looks on screen, i.e.,
@@ -346,7 +364,7 @@ const refreshGameBoard = (gameData, canDiscard) => {
         clickToDiscard(event.currentTarget, i);
         console.log(event.currentTarget);
       });
-    // }
+    }
     playerHandContainer.appendChild(cardFront);
   }
 

@@ -420,12 +420,15 @@ const drawingFromDeck = async function (game, response) {
     });
 }
 
-const drawingFromDiscard = async function (game , response) {
+const drawingFromDiscard = async function (game, cardIndex, response) {
+
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[1]; 
+  const discardedCard = playersHand.splice(cardIndex, 1);
   sortHandBy(playerHand, 'rank');
+  
   const discardPile = game.gameState.round.discardPile; 
-  playerHand.push(discardPile.pop()); 
+  discardPile.push(discardedCard); 
   const discardPileToShow = discardPile[discardPile.length - 1];
 
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
@@ -564,6 +567,19 @@ export default function initGamesController(db) {
     }
   }
 
+  const discardFromHand = async (request, response) => {
+    try {
+      // get the game by the ID passed in the request
+      const game = await db.Game.findByPk(request.params.id);
+      const cardIndex = request.params.cardiD;
+      drawingFromDiscard(game, cardIndex, response);
+      
+    } catch (error) {
+      response.status(500).send(error);
+      console.log(error);
+    }
+  }
+
 
 //   // deal two new cards from the deck.
 //   const deal = async (request, response) => {
@@ -621,6 +637,7 @@ export default function initGamesController(db) {
     pass,
     drawDeck,
     drawDiscard,
+    discardFromHand,
     // index,
   };
 }
