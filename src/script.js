@@ -159,8 +159,6 @@ const passingDiscardCard = () => {
 
 const drawingFromDeck = () => {
 
-  // gameHelpText.innerText = `Discard a card from your hand`
-
   // setTimeout(() => {
     axios.put(`/games/${currentGame.id}/drawDeck`)
     .then((response) => {
@@ -177,14 +175,33 @@ const drawingFromDeck = () => {
     });
   
   gameHelpText.innerText = `Discard a card from your hand`
-  // }, 3000);
+  // }, 1000);
 
   playingDeck.style.pointerEvents = 'none';
   discardPile.style.pointerEvents = 'none';
 }
 
 const drawingFromDiscard = () => {
-    console.log('success draw from discard')
+  // setTimeout(() => {
+    axios.put(`/games/${currentGame.id}/drawDiscard`)
+    .then((response) => {
+      // set the global value to the new game.
+      currentGame = response.data;
+      console.log(response.data);
+      
+      // display it out to the user
+      refreshGameBoard(currentGame);
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+    });
+  
+  gameHelpText.innerText = `Discard a card from your hand`
+  // }, 1000);
+
+  playingDeck.style.pointerEvents = 'none';
+  discardPile.style.pointerEvents = 'none';
 }
 
 const clickToDiscard = (card, index) => {
