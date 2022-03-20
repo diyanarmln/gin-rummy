@@ -2,6 +2,7 @@ const player1 = 0;
 const player2 = 1;
 const playerTurn = 1;
 
+let currentGame = null;
 /*
  * ========================================================
  * ========================================================
@@ -101,6 +102,44 @@ const showCard = (card) => {
  * ========================================================
  * ========================================================
  *
+ *                  Click Events
+ *
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ */
+const passingDiscardCard = () => {
+  passBtn.style.visibility = "hidden";
+  gameHelpText.innerText = `Opponent's turn`
+
+  setTimeout(() => {
+    axios.put(`/games/${currentGame.id}/pass`)
+    .then((response) => {
+      // set the global value to the new game.
+      currentGame = response.data;
+      console.log(response.data);
+      
+      // display it out to the user
+      refreshGameBoard(currentGame);
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+    });
+  
+  gameHelpText.innerText = `Your turn`
+  }, 3000);
+  
+  // enable draw deck
+  // enable draw from discard
+}
+
+/*
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ *
  *                  DOM Elements
  *
  * ========================================================
@@ -129,18 +168,17 @@ const gameFunctionsContainer = createContainer('gameFunctionsContainer');
 gameFunctionsContainer.classList.add('card-container', 'playing-deck-container');
 boardMiddleSection.appendChild(gameFunctionsContainer);
 
-const leftButtonContainer = createContainer('leftButtonContainer', 'beige');
+const leftButtonContainer = createContainer('leftButtonContainer');
 leftButtonContainer.classList.add('playing-deck-btn-container');
 const ginBtn = createButton('ginBtn', 'Gin');
 ginBtn.classList.add('btn');
 leftButtonContainer.appendChild(ginBtn);
 
-const rightButtoncontainer = createContainer('rightButtoncontainer', 'beige');
+const rightButtoncontainer = createContainer('rightButtoncontainer');
 rightButtoncontainer.classList.add('playing-deck-btn-container')
-const passBtn = createButton('passBtn', 'Pass');
+const passBtn = createButton('passBtn', 'Pass', passingDiscardCard);
 passBtn.classList.add('btn');
 passBtn.style.visibility = "hidden";
-passBtn.addEventListener('click', passingDiscardCard)
 rightButtoncontainer.appendChild(passBtn);
 
 gameFunctionsContainer.appendChild(leftButtonContainer);
@@ -169,29 +207,6 @@ boardBottomSection.appendChild(playerHandContainer);
 const deadwoodCounter = createContainer('deadwoodCounter');
 deadwoodCounter.classList.add('deadwoodContainer')
 boardBottomSection.appendChild(deadwoodCounter);
-
-/*
- * ========================================================
- * ========================================================
- * ========================================================
- * ========================================================
- *
- *                  Click Events
- *
- * ========================================================
- * ========================================================
- * ========================================================
- */
-const passingDiscardCard = () => {
-  if (playerTurn === 0) {
-    playerTurn += 1;
-  }
-  else {
-    playerTurn = 0
-  }
-
-  passBtn.style.visibility = "hidden";
-}
 
 /*
  * ========================================================
@@ -235,13 +250,35 @@ const initGameBoardDom = (gameData) => {
   gameContainer.appendChild(boardBottomSection);
 }
 
+const refreshGameBoard = (gameData ) => {
+
+  playerHandContainer.innerHTML = "";
+  discardPile.innerHTML = "";
+
+  let playerHand = gameData.playerHand[1];
+
+  for(let i = 0; i < playerHand.length; i += 1) {
+    const cardFront = showCard(playerHand[i]);
+    playerHandContainer.appendChild(cardFront);
+  }
+
+  deadwoodCounter.innerText = `Deadwood: ${gameData.playerDeadwood[1]}`;
+
+  const discardCardForPicking = showCard(gameData.discardCardForPicking);
+  discardCardForPicking.classList.remove('card-front');
+  discardCardForPicking.classList.add('discard-card-front');
+  discardPile.appendChild(discardCardForPicking);
+
+}
+
 const createGame = function () {
   // Make a request to create a new game
   axios.post('/games')
     .then((response) => {
+
       // set the global value to the new game.
       currentGame = response.data;
-      console.log(response);
+      console.log(response.data);
       
       // display it out to the user
       // runGame(currentGame);
