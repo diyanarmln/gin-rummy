@@ -132,7 +132,7 @@ const passingDiscardCard = () => {
   
   playingDeck.style.pointerEvents = 'auto';
   discardPile.style.pointerEvents = 'auto';
-  
+
 }
 
 const drawingFromDeck = () => {
@@ -143,7 +143,7 @@ const drawingFromDiscard = () => {
     console.log('success draw from discard')
 }
 
-const clickToDiscard = () => {
+const clickToDiscard = (card, index) => {
   console.log('success click on card in hand')
 }
 
