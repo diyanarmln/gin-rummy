@@ -104,27 +104,7 @@ const showCard = (card) => {
  * ========================================================
  */
 
-
-
-/*
- * ========================================================
- * ========================================================
- * ========================================================
- * ========================================================
- *
- *                  Game Helper Functions
- *
- * ========================================================
- * ========================================================
- * ========================================================
- */
-
-const gameContainer = document.getElementById('game-container')
-
-
-const initGameBoardDom = (gameData) => {
-
-  const boardUpperSection = createContainer('boardUpperSection');
+const boardUpperSection = createContainer('boardUpperSection');
   const boardMiddleSection = createContainer('boardMiddleSection');
   const boardBottomSection = createContainer('boardBottomSection');
   const boardGameHelpText = createContainer('boardGameHelpText');
@@ -166,17 +146,12 @@ const initGameBoardDom = (gameData) => {
   const discardPile = createContainer('discardPile');
   discardPile.classList.add('discard-deck');
   discardPile.style.marginRight = 0;
-  const discardCardForPicking = showCard(gameData.discardCardForPicking);
-  discardCardForPicking.classList.remove('card-front');
-  discardCardForPicking.classList.add('discard-card-front');
   gameFunctionsContainer.appendChild(discardPile);
-  discardPile.appendChild(discardCardForPicking);
 
   gameFunctionsContainer.appendChild(rightButtoncontainer);
 
   // game help text container
   const gameHelpText = createContainer('gameHelpText');
-  gameHelpText.innerText = 'test';
   gameHelpText.classList.add('gameHelpText');
   boardGameHelpText.appendChild(gameHelpText);
 
@@ -184,7 +159,29 @@ const initGameBoardDom = (gameData) => {
   const playerHandContainer = createContainer('playerHandContainer');
   playerHandContainer.classList.add('card-container');
   boardBottomSection.appendChild(playerHandContainer);
-  
+
+  const deadwoodCounter = createContainer('deadwoodCounter');
+  deadwoodCounter.classList.add('deadwoodContainer')
+  boardBottomSection.appendChild(deadwoodCounter);
+
+/*
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ *
+ *                  Game Helper Functions
+ *
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ */
+
+const gameContainer = document.getElementById('game-container')
+
+
+const initGameBoardDom = (gameData) => {
+
   let playerHand = gameData.playerHand[1];
 
   for(let i = 0; i < playerHand.length; i += 1) {
@@ -192,10 +189,14 @@ const initGameBoardDom = (gameData) => {
     playerHandContainer.appendChild(cardFront);
   }
 
-  const deadwoodCounter = createContainer('deadwoodCounter');
-  deadwoodCounter.innerText = `Deadwood: ${gameData.playerDeadwood[1]}`
-  deadwoodCounter.classList.add('deadwoodContainer')
-  boardBottomSection.appendChild(deadwoodCounter);
+  gameHelpText.innerText = 'test';
+
+  deadwoodCounter.innerText = `Deadwood: ${gameData.playerDeadwood[1]}`;
+
+  const discardCardForPicking = showCard(gameData.discardCardForPicking);
+  discardCardForPicking.classList.remove('card-front');
+  discardCardForPicking.classList.add('discard-card-front');
+  discardPile.appendChild(discardCardForPicking);
 
   gameContainer.appendChild(boardUpperSection);
   gameContainer.appendChild(boardMiddleSection);
