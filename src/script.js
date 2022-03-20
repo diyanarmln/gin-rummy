@@ -172,6 +172,7 @@ const leftButtonContainer = createContainer('leftButtonContainer');
 leftButtonContainer.classList.add('playing-deck-btn-container');
 const ginBtn = createButton('ginBtn', 'Gin');
 ginBtn.classList.add('btn');
+ginBtn.style.visibility = "hidden";
 leftButtonContainer.appendChild(ginBtn);
 
 const rightButtoncontainer = createContainer('rightButtoncontainer');
