@@ -420,17 +420,52 @@ const drawingFromDeck = async function (game, response) {
     });
 }
 
-const drawingFromDiscard = async function (game, cardIndex, response) {
+const drawingFromDiscard = async function (game, response) {
+  const playersHand = game.gameState.round.playersHand;
+  const playerHand = game.gameState.round.playersHand[1]; 
+  sortHandBy(playerHand, 'rank');
+  const discardPile = game.gameState.round.discardPile; 
+  playerHand.push(discardPile.pop()); 
+  const discardPileToShow = discardPile[discardPile.length - 1];
+
+  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+
+  await game.update({
+    gameState: {
+      status: game.gameState.status,
+      score: game.gameState.score,
+      round: {
+        cardDeck: game.gameState.cardDeck,
+        discardPile,
+        playersHand,
+        playersDeadwoodValue,
+        discardPileToShow,
+      },
+    },
+  })
+
+  response.send({
+    id: game.id,
+    playerHand: game.gameState.round.playersHand,
+    score: game.gameState.score,
+    playerDeadwood: game.gameState.round.playersDeadwoodValue,
+    discardCardForPicking: game.gameState.round.discardPileToShow,
+  });
+}
+
+const discardingFromHand = async function (game, cardIndex, response) {
 
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[1]; 
-  const discardedCard = playersHand.splice(cardIndex, 1);
-  sortHandBy(playerHand, 'rank');
-  
+  const discardedCard = playerHand.splice(cardIndex, 1);
   const discardPile = game.gameState.round.discardPile; 
-  discardPile.push(discardedCard); 
+  sortHandBy(playerHand, 'rank');
+  console.log('discardedCard', discardedCard);
+  console.log('discardPile', discardPile);
+  discardPile.push(discardedCard[0]); 
+  console.log('discardPile after push', discardPile);
   const discardPileToShow = discardPile[discardPile.length - 1];
-
+  console.log('discardPileToShow after push', discardPileToShow);
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
 
   await game.update({
@@ -487,12 +522,10 @@ export default function initGamesController(db) {
 
     // deal out a new shuffled deck for this game.
     const cardDeck = shuffleCards(makeDeck());
-    console.log('raw cardDeck', cardDeck);
     const playersHand = dealPlayerCards(cardDeck);
     discardPile.push(cardDeck.pop());
     const playersDeadwoodValue = getDeadwoodSum(playersHand);
     const discardPileToShow = discardPile[discardPile.length - 1];
-    console.log('post deal cardDeck', cardDeck)
 
     const newGame = {
       gameState: {
@@ -571,8 +604,8 @@ export default function initGamesController(db) {
     try {
       // get the game by the ID passed in the request
       const game = await db.Game.findByPk(request.params.id);
-      const cardIndex = request.params.cardiD;
-      drawingFromDiscard(game, cardIndex, response);
+      const cardIndex = request.params.cardId;
+      discardingFromHand(game, cardIndex, response);
       
     } catch (error) {
       response.status(500).send(error);

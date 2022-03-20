@@ -205,6 +205,7 @@ const drawingFromDiscard = () => {
 }
 
 const clickToDiscard = (card, index) => {
+  console.log('cardIndex', index);
   // setTimeout(() => {
     axios.put(`/games/${currentGame.id}/discardFromHand/${index}`)
     .then((response) => {
@@ -220,7 +221,7 @@ const clickToDiscard = (card, index) => {
       console.log(error);
     });
   
-  gameHelpText.innerText = `Discard a card from your hand`
+  gameHelpText.innerText = `Opponent's turn`
   // }, 1000);
 }
 
