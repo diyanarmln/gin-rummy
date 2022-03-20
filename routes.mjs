@@ -19,8 +19,9 @@ export default function bindRoutes(app) {
   app.put('/games/:id/pass', GamesController.pass);
   // update round when player draws from deck
   app.put('/games/:id/drawDeck', GamesController.drawDeck);
-
   // update round when player draws from discard pile
+  app.put('/games/:id/drawDiscard', GamesController.drawDiscard);
+
 
   // update round when player discards from hand
   
