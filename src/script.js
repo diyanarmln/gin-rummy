@@ -1,3 +1,5 @@
+// import './styles.css';
+
 /*
  * ========================================================
  * ========================================================
@@ -310,4 +312,4 @@ const createGame = function () {
  */
 
 const createGameBtn = createButton('createGameBtn', 'createGameBtn', createGame)
-gameContainer.appendChild(createGameBtn);
+document.body.appendChild(createGameBtn);

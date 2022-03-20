@@ -1,13 +1,11 @@
+const { merge } = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
-  entry: {
-    main: './src/script.js',
-  },
   mode: 'production',
+  devtool: false,
   plugins: [
     new HtmlWebpackPlugin({
       // name this file main, so that it does not get automatically requested as a static file
