@@ -226,6 +226,28 @@ const clickToDiscard = (card, index) => {
   
   gameHelpText.innerText = `Opponent's turn`
   // }, 1000);
+
+  setTimeout(() => {
+    axios.put(`/games/${currentGame.id}/autoDrawDiscard`)
+    .then((response) => {
+      // set the global value to the new game.
+      currentGame = response.data;
+      console.log(response.data);
+      
+      // display it out to the user
+      refreshGameBoard(currentGame, false);
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+    });
+  
+    gameHelpText.innerText = `Choose to draw from deck or discarded pile.`
+
+  }, 3000);
+
+  playingDeck.style.pointerEvents = 'auto';
+  discardPile.style.pointerEvents = 'auto';
 }
 
 /*
