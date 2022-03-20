@@ -1,3 +1,5 @@
+import e from "express";
+
 let player = 1;
 let computer = 0;
 
@@ -339,6 +341,14 @@ const findCardIndex = function (arrayOfCards, value) {
   return cardIndex;
 }
 
+const autoDiscard = async function (playerHand, discardPile) {
+  const playerDeadwood = getDeadwoodinHand(playerHand); 
+  const isHighestDeadwood = playerDeadwood.pop(); 
+  const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
+  const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
+  discardPile.push(discardedCard[0]);
+}
+
 const autoPass = async function (game, response, playerHandIndex) {
   const randomIndexForPassing = getRandomIndex(2);
 
@@ -358,12 +368,7 @@ const autoPass = async function (game, response, playerHandIndex) {
     const discardPile = game.gameState.round.discardPile; 
     playerHand.push(discardPile.pop()); 
 
-    const playerDeadwood = getDeadwoodinHand(playerHand); 
-    const isHighestDeadwood = playerDeadwood.pop(); 
-    const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
-    const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
-
-    discardPile.push(discardedCard[0]);
+    autoDiscard(playerHand, discardPile);
     const playersDeadwoodValue = getDeadwoodSum(playersHand);
     const discardPileToShow = discardPile[discardPile.length - 1];
 
@@ -391,13 +396,45 @@ const autoPass = async function (game, response, playerHandIndex) {
   }
 }
 
-const autoDraw = async function (game, response) {
+const automatingDrawDiscard = async function (game, response) {
   const randomIndexForDrawType = getRandomIndex(2);
 
+  if(randomIndexForDrawType === 0) {
+    drawingFromDeck(game, computer);
+  }
+  else {
+    drawingFromDiscard(game, computer);
+  }
+
+  autoDiscard(playerHand, discardPile);
+  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+  const discardPileToShow = discardPile[discardPile.length - 1];
+
+  await game.update({
+    gameState: {
+      status: game.gameState.status,
+      score: game.gameState.score,
+      round: {
+        cardDeck: game.gameState.round.cardDeck,
+        discardPile,
+        playersHand,
+        playersDeadwoodValue,
+        discardPileToShow,
+      },
+    },
+  })
+
+  response.send({
+    id: game.id,
+    playerHand: game.gameState.round.playersHand,
+    score: game.gameState.score,
+    playerDeadwood: game.gameState.round.playersDeadwoodValue,
+    discardCardForPicking: game.gameState.round.discardPileToShow,
+  });
 
 }
 
-const drawingFromDeck = async function (game, response, playersHandIndex) {
+const drawingFromDeck = async function (game, playersHandIndex) {
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   sortHandBy(playerHand, 'rank');
@@ -418,17 +455,9 @@ const drawingFromDeck = async function (game, response, playersHandIndex) {
       },
     },
   })
-
-  response.send({
-      id: game.id,
-      playerHand: game.gameState.round.playersHand,
-      score: game.gameState.score,
-      playerDeadwood: game.gameState.round.playersDeadwoodValue,
-      discardCardForPicking: game.gameState.round.discardPileToShow,
-    });
 }
 
-const drawingFromDiscard = async function (game, response, playersHandIndex) {
+const drawingFromDiscard = async function (game, playersHandIndex) {
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   sortHandBy(playerHand, 'rank');
@@ -451,14 +480,6 @@ const drawingFromDiscard = async function (game, response, playersHandIndex) {
       },
     },
   })
-
-  response.send({
-    id: game.id,
-    playerHand: game.gameState.round.playersHand,
-    score: game.gameState.score,
-    playerDeadwood: game.gameState.round.playersDeadwoodValue,
-    discardCardForPicking: game.gameState.round.discardPileToShow,
-  });
 }
 
 const discardingFromHand = async function (game, cardIndex, response, playersHandIndex) {
@@ -588,7 +609,14 @@ export default function initGamesController(db) {
     try {
       // get the game by the ID passed in the request
       const game = await db.Game.findByPk(request.params.id);
-      drawingFromDeck(game, response, player);
+      drawingFromDeck(game, player);
+      response.send({
+        id: game.id,
+        playerHand: game.gameState.round.playersHand,
+        score: game.gameState.score,
+        playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        discardCardForPicking: game.gameState.round.discardPileToShow,
+      });
       
     } catch (error) {
       response.status(500).send(error);
@@ -600,7 +628,14 @@ export default function initGamesController(db) {
     try {
       // get the game by the ID passed in the request
       const game = await db.Game.findByPk(request.params.id);
-      drawingFromDiscard(game, response, player);
+      drawingFromDiscard(game, player);
+      response.send({
+        id: game.id,
+        playerHand: game.gameState.round.playersHand,
+        score: game.gameState.score,
+        playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        discardCardForPicking: game.gameState.round.discardPileToShow,
+      });
       
     } catch (error) {
       response.status(500).send(error);
@@ -621,6 +656,18 @@ export default function initGamesController(db) {
     }
   }
 
+  const autoDrawDiscard = async (request, response) => {
+    try {
+      // get the game by the ID passed in the request
+      const game = await db.Game.findByPk(request.params.id);
+      automatingDrawDiscard(game, response);
+      
+    } catch (error) {
+      response.status(500).send(error);
+      console.log(error);
+    }
+  }
+
   // return all functions we define in an object
   // refer to the routes file above to see this used
   return {
@@ -629,5 +676,6 @@ export default function initGamesController(db) {
     drawDeck,
     drawDiscard,
     discardFromHand,
+    autoDrawDiscard,
   };
 }
