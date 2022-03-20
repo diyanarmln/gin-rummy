@@ -182,6 +182,9 @@ const drawingFromDeck = () => {
 }
 
 const drawingFromDiscard = () => {
+
+  passBtn.style.visibility = "hidden";
+
   // setTimeout(() => {
     axios.put(`/games/${currentGame.id}/drawDiscard`)
     .then((response) => {
@@ -214,7 +217,7 @@ const clickToDiscard = (card, index) => {
       console.log(response.data);
       
       // display it out to the user
-      refreshGameBoard(currentGame, true);
+      refreshGameBoard(currentGame, false);
     })
     .catch((error) => {
       // handle error
