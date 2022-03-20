@@ -21,10 +21,8 @@ export default function bindRoutes(app) {
   app.put('/games/:id/drawDeck', GamesController.drawDeck);
   // update round when player draws from discard pile
   app.put('/games/:id/drawDiscard', GamesController.drawDiscard);
-
-
   // update round when player discards from hand
-  
+  app.put('/games/:id/discardFromHand', GamesController.discardFromHand);
   // update round and game when player knocks
 
   // update round and game when player gins
