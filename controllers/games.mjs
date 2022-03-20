@@ -1,3 +1,6 @@
+let player = 1;
+let computer = 0;
+
 /*
  * ========================================================
  * ========================================================
@@ -336,9 +339,8 @@ const findCardIndex = function (arrayOfCards, value) {
   return cardIndex;
 }
 
-const autoPass = async function (game, response) {
+const autoPass = async function (game, response, playerHandIndex) {
   const randomIndexForPassing = getRandomIndex(2);
-  console.log('randomIndexForPassing', randomIndexForPassing)
 
   if(randomIndexForPassing === 0){
     response.send({
@@ -352,14 +354,14 @@ const autoPass = async function (game, response) {
 
   else {
     const playersHand = game.gameState.round.playersHand;
-    const player1Hand = game.gameState.round.playersHand[0]; 
+    const playerHand = game.gameState.round.playersHand[playerHandIndex]; 
     const discardPile = game.gameState.round.discardPile; 
-    player1Hand.push(discardPile.pop()); 
+    playerHand.push(discardPile.pop()); 
 
-    const player1Deadwood = getDeadwoodinHand(player1Hand); 
-    const isHighestDeadwood = player1Deadwood.pop(); 
-    const cardIndexToDiscardFromHand = findCardIndex(player1Hand, isHighestDeadwood.rank); 
-    const discardedCard = player1Hand.splice(cardIndexToDiscardFromHand, 1); 
+    const playerDeadwood = getDeadwoodinHand(playerHand); 
+    const isHighestDeadwood = playerDeadwood.pop(); 
+    const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
+    const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
 
     discardPile.push(discardedCard[0]);
     const playersDeadwoodValue = getDeadwoodSum(playersHand);
@@ -389,9 +391,15 @@ const autoPass = async function (game, response) {
   }
 }
 
-const drawingFromDeck = async function (game, response) {
+const autoDraw = async function (game, response) {
+  const randomIndexForDrawType = getRandomIndex(2);
+
+
+}
+
+const drawingFromDeck = async function (game, response, playersHandIndex) {
   const playersHand = game.gameState.round.playersHand;
-  const playerHand = game.gameState.round.playersHand[1]; 
+  const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   sortHandBy(playerHand, 'rank');
   const cardDeck = game.gameState.round.cardDeck;     
   playerHand.push(cardDeck.pop()); 
@@ -420,9 +428,9 @@ const drawingFromDeck = async function (game, response) {
     });
 }
 
-const drawingFromDiscard = async function (game, response) {
+const drawingFromDiscard = async function (game, response, playersHandIndex) {
   const playersHand = game.gameState.round.playersHand;
-  const playerHand = game.gameState.round.playersHand[1]; 
+  const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   sortHandBy(playerHand, 'rank');
   const discardPile = game.gameState.round.discardPile; 
   playerHand.push(discardPile.pop()); 
@@ -453,10 +461,10 @@ const drawingFromDiscard = async function (game, response) {
   });
 }
 
-const discardingFromHand = async function (game, cardIndex, response) {
+const discardingFromHand = async function (game, cardIndex, response, playersHandIndex) {
 
   const playersHand = game.gameState.round.playersHand;
-  const playerHand = game.gameState.round.playersHand[1]; 
+  const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   const discardedCard = playerHand.splice(cardIndex, 1);
   const discardPile = game.gameState.round.discardPile; 
   sortHandBy(playerHand, 'rank');
@@ -568,7 +576,7 @@ export default function initGamesController(db) {
     try {
       // get the game by the ID passed in the request
       const game = await db.Game.findByPk(request.params.id);
-      autoPass(game, response);
+      autoPass(game, response, computer);
       
     } catch (error) {
       response.status(500).send(error);
@@ -580,7 +588,7 @@ export default function initGamesController(db) {
     try {
       // get the game by the ID passed in the request
       const game = await db.Game.findByPk(request.params.id);
-      drawingFromDeck(game, response);
+      drawingFromDeck(game, response, player);
       
     } catch (error) {
       response.status(500).send(error);
@@ -592,7 +600,7 @@ export default function initGamesController(db) {
     try {
       // get the game by the ID passed in the request
       const game = await db.Game.findByPk(request.params.id);
-      drawingFromDiscard(game, response);
+      drawingFromDiscard(game, response, player);
       
     } catch (error) {
       response.status(500).send(error);
@@ -605,7 +613,7 @@ export default function initGamesController(db) {
       // get the game by the ID passed in the request
       const game = await db.Game.findByPk(request.params.id);
       const cardIndex = request.params.cardId;
-      discardingFromHand(game, cardIndex, response);
+      discardingFromHand(game, cardIndex, response, player);
       
     } catch (error) {
       response.status(500).send(error);
@@ -613,64 +621,13 @@ export default function initGamesController(db) {
     }
   }
 
-
-//   // deal two new cards from the deck.
-//   const deal = async (request, response) => {
-//     try {
-//       // get the game by the ID passed in the request
-//       const game = await db.Game.findByPk(request.params.id);
-
-//       // make changes to the object
-//       const player1Card = game.gameState.cardDeck.pop();
-//       const player2Card = game.gameState.cardDeck.pop();
-//       const playerHand = [player1Card, player2Card];
-
-//       if (player1Card.rank > player2Card.rank) {
-//         game.gameState.result = 'Player 1 wins!!';
-//         game.gameState.score.player1 += 1;
-//       } else if (player1Card.rank < player2Card.rank) {
-//         game.gameState.result = 'Player 2 wins!!';
-//         game.gameState.score.player2 += 1;
-//       } else {
-//         game.gameState.result = 'Draw';
-//       }
-
-//       // update the game with the new info
-//       await game.update({
-//         gameState: {
-//           cardDeck: game.gameState.cardDeck,
-//           playerHand,
-//           result: game.gameState.result,
-//           score: {
-//             player1: game.gameState.score.player1,
-//             player2: game.gameState.score.player2
-//           },
-//         },
-
-//       });
-
-//       // send the updated game back to the user.
-//       // dont include the deck so the user can't cheat
-//       response.send({
-//         id: game.id,
-//         playerHand: game.gameState.playerHand,
-//         result: game.gameState.result,
-//         score: game.gameState.score,
-//       });
-//     } catch (error) {
-//       response.status(500).send(error);
-//     }
-//   };
-
   // return all functions we define in an object
   // refer to the routes file above to see this used
   return {
-//     deal,
     createGame,
     pass,
     drawDeck,
     drawDiscard,
     discardFromHand,
-    // index,
   };
 }
