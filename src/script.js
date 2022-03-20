@@ -1,5 +1,3 @@
-// import './styles.css';
-
 /*
  * ========================================================
  * ========================================================
@@ -126,13 +124,13 @@ const gameContainer = document.getElementById('game-container')
 
 const initGameBoardDom = (gameData) => {
 
-  const boardUpperSection = createContainer('boardUpperSection', 'blue');
-  const boardMiddleSection = createContainer('boardMiddleSection', 'green');
-  const boardBottomSection = createContainer('boardBottomSection', 'pink');
-  const boardGameHelpText = createContainer('boardGameHelpText', 'green');
+  const boardUpperSection = createContainer('boardUpperSection');
+  const boardMiddleSection = createContainer('boardMiddleSection');
+  const boardBottomSection = createContainer('boardBottomSection');
+  const boardGameHelpText = createContainer('boardGameHelpText');
 
   // upper section of game board
-  const opponentHandContainer = createContainer('opponentHandContainer', 'yellow');
+  const opponentHandContainer = createContainer('opponentHandContainer')
   opponentHandContainer.classList.add('card-container', 'hand-position');
   boardUpperSection.appendChild(opponentHandContainer);
 
@@ -183,7 +181,7 @@ const initGameBoardDom = (gameData) => {
   boardGameHelpText.appendChild(gameHelpText);
 
   // bottom section of game board
-  const playerHandContainer = createContainer('playerHandContainer', 'yellow');
+  const playerHandContainer = createContainer('playerHandContainer');
   playerHandContainer.classList.add('card-container');
   boardBottomSection.appendChild(playerHandContainer);
   
