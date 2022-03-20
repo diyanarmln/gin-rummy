@@ -31,7 +31,7 @@ const shuffleCards = function (cards) {
   // loop over the entire cards array
   while (currentIndex < cards.length) {
     // select a random position from the deck
-    const randomIndex = getRandomIndex(cards.length);
+    const randomIndexForPassing = getRandomIndex(cards.length);
 
     // get the current card in the loop
     const currentItem = cards[currentIndex];
@@ -130,8 +130,8 @@ const makeDeck = function () {
  * function to sort hand by rank
  * @param hand 
  */
-const sortByRank = function (hand) {
-  hand.sort((a, b) => a.rank - b.rank)
+const sortHandBy = function (hand, method) {
+  hand.sort((a, b) => a.method - b.method)
 }
 
 /**
@@ -150,8 +150,8 @@ const dealPlayerCards = function (deck) {
       player2Hand.push(deck.pop());
     }
   }
-  sortByRank(player1Hand);
-  sortByRank(player2Hand);
+  sortHandBy(player1Hand, rank);
+  sortHandBy(player2Hand, rank);
   playersHand = [player1Hand, player2Hand];
   return playersHand;
 }
@@ -201,6 +201,7 @@ const getDeadwoodinHand = function (playerHand) {
     }
   }
 
+  sortHandBy(deadwoodHand, deadwoodValue);
   return deadwoodHand;
 }
 
@@ -405,6 +406,66 @@ export default function initGamesController(db) {
     }
   };
 
+  const pass = async (request, response) => {
+    try {
+
+      // get the game by the ID passed in the request
+      const game = await db.Game.findByPk(request.params.id);
+
+      const randomIndexForPassing = getRandomIndex(2);
+
+      if(randomIndexForPassing === 0){
+        response.send({
+          id: game.id,
+          playerHand: game.gameState.round.playersHand,
+          score: game.gameState.score,
+          playerDeadwood: game.gameState.round.playersDeadwoodValue,
+          discardCardForPicking: game.gameState.round.discardPile[discardPile.length - 1],
+        });
+      }
+
+      const playersHand = game.gameState.round.playersHand;
+      const player1Hand = game.gameState.round.playersHand[0];
+      const discardPile = game.gameState.round.discardPile;
+      player1Hand.push(discardPile.pop());
+
+      const player1Deadwood = getDeadwoodinHand(player1Hand);
+      console.log('comp deadwood', player1Deadwood);
+      discardPile.push(player1Deadwood.pop());
+      const playersDeadwoodValue = getDeadwoodSum(playersHand);
+
+      await game.update({
+        gameState: {
+          status: 'started',
+          score: {
+            player1: player1Score,
+            player2: player2Score
+          },
+          round: {
+            cardDeck,
+            discardPile,
+            playersHand,
+            playersDeadwoodValue,
+          },
+        },
+      })
+
+      response.send({
+        id: game.id,
+        playerHand: game.gameState.round.playersHand,
+        score: game.gameState.score,
+        playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        discardCardForPicking: game.gameState.round.discardPile[discardPile.length - 1],
+      });
+
+    }
+    catch (error) {
+      response.status(500).send(error);
+    }
+  };
+
+
+
 //   // deal two new cards from the deck.
 //   const deal = async (request, response) => {
 //     try {
@@ -458,6 +519,7 @@ export default function initGamesController(db) {
   return {
 //     deal,
     createGame,
+    pass,
     // index,
   };
 }

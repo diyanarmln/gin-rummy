@@ -1,3 +1,7 @@
+const player1 = 0;
+const player2 = 1;
+const playerTurn = 1;
+
 /*
  * ========================================================
  * ========================================================
@@ -105,64 +109,89 @@ const showCard = (card) => {
  */
 
 const boardUpperSection = createContainer('boardUpperSection');
-  const boardMiddleSection = createContainer('boardMiddleSection');
-  const boardBottomSection = createContainer('boardBottomSection');
-  const boardGameHelpText = createContainer('boardGameHelpText');
+const boardMiddleSection = createContainer('boardMiddleSection');
+const boardBottomSection = createContainer('boardBottomSection');
+const boardGameHelpText = createContainer('boardGameHelpText');
 
-  // upper section of game board
-  const opponentHandContainer = createContainer('opponentHandContainer')
-  opponentHandContainer.classList.add('card-container', 'hand-position');
-  boardUpperSection.appendChild(opponentHandContainer);
+// upper section of game board
+const opponentHandContainer = createContainer('opponentHandContainer')
+opponentHandContainer.classList.add('card-container', 'hand-position');
+boardUpperSection.appendChild(opponentHandContainer);
 
-  for(let i = 0; i < 10; i += 1) {
-    const cardBack = createContainer('cardBack');
-    cardBack.classList.add('card-back')
-    opponentHandContainer.appendChild(cardBack);
+for(let i = 0; i < 10; i += 1) {
+  const cardBack = createContainer('cardBack');
+  cardBack.classList.add('card-back')
+  opponentHandContainer.appendChild(cardBack);
+}
+
+// middle section of game board
+const gameFunctionsContainer = createContainer('gameFunctionsContainer');
+gameFunctionsContainer.classList.add('card-container', 'playing-deck-container');
+boardMiddleSection.appendChild(gameFunctionsContainer);
+
+const leftButtonContainer = createContainer('leftButtonContainer', 'beige');
+leftButtonContainer.classList.add('playing-deck-btn-container');
+const ginBtn = createButton('ginBtn', 'Gin');
+ginBtn.classList.add('btn');
+leftButtonContainer.appendChild(ginBtn);
+
+const rightButtoncontainer = createContainer('rightButtoncontainer', 'beige');
+rightButtoncontainer.classList.add('playing-deck-btn-container')
+const passBtn = createButton('passBtn', 'Pass');
+passBtn.classList.add('btn');
+passBtn.style.visibility = "hidden";
+passBtn.addEventListener('click', passingDiscardCard)
+rightButtoncontainer.appendChild(passBtn);
+
+gameFunctionsContainer.appendChild(leftButtonContainer);
+
+const playingDeck = createContainer('cardBack');
+playingDeck.classList.add('card-deck');
+gameFunctionsContainer.appendChild(playingDeck);
+
+const discardPile = createContainer('discardPile');
+discardPile.classList.add('discard-deck');
+discardPile.style.marginRight = 0;
+gameFunctionsContainer.appendChild(discardPile);
+
+gameFunctionsContainer.appendChild(rightButtoncontainer);
+
+// game help text container
+const gameHelpText = createContainer('gameHelpText');
+gameHelpText.classList.add('gameHelpText');
+boardGameHelpText.appendChild(gameHelpText);
+
+// bottom section of game board
+const playerHandContainer = createContainer('playerHandContainer');
+playerHandContainer.classList.add('card-container');
+boardBottomSection.appendChild(playerHandContainer);
+
+const deadwoodCounter = createContainer('deadwoodCounter');
+deadwoodCounter.classList.add('deadwoodContainer')
+boardBottomSection.appendChild(deadwoodCounter);
+
+/*
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ *
+ *                  Click Events
+ *
+ * ========================================================
+ * ========================================================
+ * ========================================================
+ */
+const passingDiscardCard = () => {
+  if (playerTurn === 0) {
+    playerTurn += 1;
+  }
+  else {
+    playerTurn = 0
   }
 
-  // middle section of game board
-  const gameFunctionsContainer = createContainer('gameFunctionsContainer');
-  gameFunctionsContainer.classList.add('card-container', 'playing-deck-container');
-  boardMiddleSection.appendChild(gameFunctionsContainer);
-
-  const leftButtonContainer = createContainer('leftButtonContainer', 'beige');
-  leftButtonContainer.classList.add('playing-deck-btn-container');
-  const ginBtn = createButton('ginBtn', 'Gin');
-  ginBtn.classList.add('btn');
-  leftButtonContainer.appendChild(ginBtn);
-
-  const rightButtoncontainer = createContainer('rightButtoncontainer', 'beige');
-  rightButtoncontainer.classList.add('playing-deck-btn-container')
-  const passBtn = createButton('passBtn', 'Pass');
-  passBtn.classList.add('btn');
-  rightButtoncontainer.appendChild(passBtn);
-
-  gameFunctionsContainer.appendChild(leftButtonContainer);
-
-  const playingDeck = createContainer('cardBack');
-  playingDeck.classList.add('card-deck');
-  gameFunctionsContainer.appendChild(playingDeck);
-
-  const discardPile = createContainer('discardPile');
-  discardPile.classList.add('discard-deck');
-  discardPile.style.marginRight = 0;
-  gameFunctionsContainer.appendChild(discardPile);
-
-  gameFunctionsContainer.appendChild(rightButtoncontainer);
-
-  // game help text container
-  const gameHelpText = createContainer('gameHelpText');
-  gameHelpText.classList.add('gameHelpText');
-  boardGameHelpText.appendChild(gameHelpText);
-
-  // bottom section of game board
-  const playerHandContainer = createContainer('playerHandContainer');
-  playerHandContainer.classList.add('card-container');
-  boardBottomSection.appendChild(playerHandContainer);
-
-  const deadwoodCounter = createContainer('deadwoodCounter');
-  deadwoodCounter.classList.add('deadwoodContainer')
-  boardBottomSection.appendChild(deadwoodCounter);
+  passBtn.style.visibility = "hidden";
+}
 
 /*
  * ========================================================
@@ -190,6 +219,8 @@ const initGameBoardDom = (gameData) => {
   }
 
   gameHelpText.innerText = 'test';
+
+  passBtn.style.visibility = "visible";
 
   deadwoodCounter.innerText = `Deadwood: ${gameData.playerDeadwood[1]}`;
 
@@ -224,8 +255,6 @@ const createGame = function () {
       console.log(error);
     });
 };
-
-// webpack
 
 // disable and hide buttons by default
 
