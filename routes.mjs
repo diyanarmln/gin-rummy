@@ -23,6 +23,8 @@ export default function bindRoutes(app) {
   app.put('/games/:id/drawDiscard', GamesController.drawDiscard);
   // update round when player discards from hand
   app.put('/games/:id/discardFromHand/:cardId', GamesController.discardFromHand);
+  // update round after computer auto draws and discards
+  app.put('/games/:id/autoDrawDiscard', GamesController.autoDrawDiscard);
   // update round and game when player knocks
 
   // update round and game when player gins
