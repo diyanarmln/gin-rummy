@@ -390,16 +390,11 @@ const autoPass = async function (game, response) {
 }
 
 const drawingFromDeck = async function (game, response) {
-  console.log('game', game);
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[1]; 
   sortHandBy(playerHand, 'rank');
   const cardDeck = game.gameState.round.cardDeck;     
-  const discardPile = game.gameState.round.discardPile; 
-
-  console.log('cardDeck'. cardDeck);
   playerHand.push(cardDeck.pop()); 
-
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
 
   await game.update({
@@ -412,6 +407,39 @@ const drawingFromDeck = async function (game, response) {
         playersHand,
         playersDeadwoodValue,
         discardPileToShow: game.gameState.round.discardPileToShow,
+      },
+    },
+  })
+
+  response.send({
+      id: game.id,
+      playerHand: game.gameState.round.playersHand,
+      score: game.gameState.score,
+      playerDeadwood: game.gameState.round.playersDeadwoodValue,
+      discardCardForPicking: game.gameState.round.discardPileToShow,
+    });
+}
+
+const drawingFromDiscard = async function (game , response) {
+  const playersHand = game.gameState.round.playersHand;
+  const playerHand = game.gameState.round.playersHand[1]; 
+  sortHandBy(playerHand, 'rank');
+  const discardPile = game.gameState.round.discardPile; 
+  playerHand.push(discardPile.pop()); 
+  const discardPileToShow = discardPile[discardPile.length - 1];
+
+  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+
+  await game.update({
+    gameState: {
+      status: game.gameState.status,
+      score: game.gameState.score,
+      round: {
+        cardDeck: game.gameState.cardDeck,
+        discardPile,
+        playersHand,
+        playersDeadwoodValue,
+        discardPileToShow,
       },
     },
   })
@@ -523,7 +551,18 @@ export default function initGamesController(db) {
       console.log(error);
     }
   }
-
+  
+  const drawDiscard = async (request, response) => {
+    try {
+      // get the game by the ID passed in the request
+      const game = await db.Game.findByPk(request.params.id);
+      drawingFromDiscard(game, response);
+      
+    } catch (error) {
+      response.status(500).send(error);
+      console.log(error);
+    }
+  }
 
 
 //   // deal two new cards from the deck.
@@ -581,6 +620,7 @@ export default function initGamesController(db) {
     createGame,
     pass,
     drawDeck,
+    drawDiscard,
     // index,
   };
 }
