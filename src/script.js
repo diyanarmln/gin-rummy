@@ -159,9 +159,9 @@ const passingDiscardCard = () => {
 
 const drawingFromDeck = () => {
 
-  gameHelpText.innerText = `Discard a card from your hand`
+  // gameHelpText.innerText = `Discard a card from your hand`
 
-  setTimeout(() => {
+  // setTimeout(() => {
     axios.put(`/games/${currentGame.id}/drawDeck`)
     .then((response) => {
       // set the global value to the new game.
@@ -176,8 +176,8 @@ const drawingFromDeck = () => {
       console.log(error);
     });
   
-  gameHelpText.innerText = `Your turn`
-  }, 3000);
+  gameHelpText.innerText = `Discard a card from your hand`
+  // }, 3000);
 
   playingDeck.style.pointerEvents = 'none';
   discardPile.style.pointerEvents = 'none';
@@ -312,7 +312,7 @@ const initGameBoardDom = (gameData) => {
   gameContainer.appendChild(boardBottomSection);
 }
 
-const refreshGameBoard = (gameData ) => {
+const refreshGameBoard = (gameData, canDiscard) => {
 
   playerHandContainer.innerHTML = "";
   discardPile.innerHTML = "";
@@ -321,13 +321,15 @@ const refreshGameBoard = (gameData ) => {
 
   for(let i = 0; i < playerHand.length; i += 1) {
     const cardFront = showCard(playerHand[i]);
-    cardFront.addEventListener('click', (event) => {
-    // we will want to pass in the card element so
-    // that we can change how it looks on screen, i.e.,
-    // "turn the card over"
-      clickToDiscard(event.currentTarget, i);
-      console.log(event.currentTarget);
-    });
+    // if (canDiscard) {
+      cardFront.addEventListener('click', (event) => {
+      // we will want to pass in the card element so
+      // that we can change how it looks on screen, i.e.,
+      // "turn the card over"
+        clickToDiscard(event.currentTarget, i);
+        console.log(event.currentTarget);
+      });
+    // }
     playerHandContainer.appendChild(cardFront);
   }
 

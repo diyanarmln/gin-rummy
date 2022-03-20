@@ -367,7 +367,10 @@ const autoPass = async function (game, response) {
 
     await game.update({
       gameState: {
+        status: game.gameState.status,
+        score: game.gameState.score,
         round: {
+          cardDeck: game.gameState.round.cardDeck,
           discardPile,
           playersHand,
           playersDeadwoodValue,
@@ -387,19 +390,28 @@ const autoPass = async function (game, response) {
 }
 
 const drawingFromDeck = async function (game, response) {
+  console.log('game', game);
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[1]; 
-  const cardDeck = game.gameState.round.cardDeck; 
+  sortHandBy(playerHand, 'rank');
+  const cardDeck = game.gameState.round.cardDeck;     
+  const discardPile = game.gameState.round.discardPile; 
+
+  console.log('cardDeck'. cardDeck);
   playerHand.push(cardDeck.pop()); 
 
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
 
   await game.update({
     gameState: {
+      status: game.gameState.status,
+      score: game.gameState.score,
       round: {
         cardDeck,
+        discardPile: game.gameState.round.discardPile,
         playersHand,
         playersDeadwoodValue,
+        discardPileToShow: game.gameState.round.discardPileToShow,
       },
     },
   })
@@ -411,7 +423,6 @@ const drawingFromDeck = async function (game, response) {
       playerDeadwood: game.gameState.round.playersDeadwoodValue,
       discardCardForPicking: game.gameState.round.discardPileToShow,
     });
-
 }
 
 /*
@@ -445,11 +456,12 @@ export default function initGamesController(db) {
 
     // deal out a new shuffled deck for this game.
     const cardDeck = shuffleCards(makeDeck());
+    console.log('raw cardDeck', cardDeck);
     const playersHand = dealPlayerCards(cardDeck);
     discardPile.push(cardDeck.pop());
     const playersDeadwoodValue = getDeadwoodSum(playersHand);
     const discardPileToShow = discardPile[discardPile.length - 1];
-    
+    console.log('post deal cardDeck', cardDeck)
 
     const newGame = {
       gameState: {
