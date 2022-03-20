@@ -108,6 +108,28 @@ const showCard = (card) => {
  * ========================================================
  * ========================================================
  */
+const createGame = function () {
+  // Make a request to create a new game
+  axios.post('/games')
+    .then((response) => {
+
+      // set the global value to the new game.
+      currentGame = response.data;
+      console.log(response.data);
+      
+      // display it out to the user
+      // runGame(currentGame);
+      initGameBoardDom(currentGame);
+      createGameBtn.remove();
+
+      
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+    });
+};
+
 const passingDiscardCard = () => {
   passBtn.style.visibility = "hidden";
   gameHelpText.innerText = `Opponent's turn`
@@ -136,7 +158,29 @@ const passingDiscardCard = () => {
 }
 
 const drawingFromDeck = () => {
-  console.log('success draw from deck')
+
+  gameHelpText.innerText = `Discard a card from your hand`
+
+  setTimeout(() => {
+    axios.put(`/games/${currentGame.id}/drawDeck`)
+    .then((response) => {
+      // set the global value to the new game.
+      currentGame = response.data;
+      console.log(response.data);
+      
+      // display it out to the user
+      refreshGameBoard(currentGame);
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+    });
+  
+  gameHelpText.innerText = `Your turn`
+  }, 3000);
+
+  playingDeck.style.pointerEvents = 'none';
+  discardPile.style.pointerEvents = 'none';
 }
 
 const drawingFromDiscard = () => {
@@ -293,30 +337,7 @@ const refreshGameBoard = (gameData ) => {
   discardCardForPicking.classList.remove('card-front');
   discardCardForPicking.classList.add('discard-card-front');
   discardPile.appendChild(discardCardForPicking);
-
 }
-
-const createGame = function () {
-  // Make a request to create a new game
-  axios.post('/games')
-    .then((response) => {
-
-      // set the global value to the new game.
-      currentGame = response.data;
-      console.log(response.data);
-      
-      // display it out to the user
-      // runGame(currentGame);
-      initGameBoardDom(currentGame);
-      createGameBtn.remove();
-
-      
-    })
-    .catch((error) => {
-      // handle error
-      console.log(error);
-    });
-};
 
 // disable and hide buttons by default
 
