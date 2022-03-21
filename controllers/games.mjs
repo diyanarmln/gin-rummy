@@ -341,12 +341,34 @@ const findCardIndex = function (arrayOfCards, value) {
   return cardIndex;
 }
 
-const autoDiscard = async function (playerHand, discardPile) {
+const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
+
+  const playersHand = game.gameState.round.playersHand;
+  const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
+  sortHandBy(playerHand, 'rank');
+  const discardPile = game.gameState.round.discardPile; 
+
   const playerDeadwood = getDeadwoodinHand(playerHand); 
   const isHighestDeadwood = playerDeadwood.pop(); 
   const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
   const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
   discardPile.push(discardedCard[0]);
+  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+  const discardPileToShow = discardPile[discardPile.length - 1];
+
+  await game.update({
+    gameState: {
+      status: game.gameState.status,
+      score: game.gameState.score,
+      round: {
+        cardDeck: game.gameState.round.cardDeck,
+        discardPile,
+        playersHand,
+        playersDeadwoodValue,
+        discardPileToShow,
+      },
+    },
+  })
 }
 
 const autoPass = async function (game, response, playerHandIndex) {
@@ -396,7 +418,8 @@ const autoPass = async function (game, response, playerHandIndex) {
   }
 }
 
-const automatingDrawDiscard = async function (game, response) {
+const automatingDrawDiscard = async function (game, gameIndex, response) {
+
   const randomIndexForDrawType = getRandomIndex(2);
 
   if(randomIndexForDrawType === 0) {
@@ -405,40 +428,14 @@ const automatingDrawDiscard = async function (game, response) {
   else {
     drawingFromDiscard(game, computer);
   }
-
-  autoDiscard(playerHand, discardPile);
-  const playersDeadwoodValue = getDeadwoodSum(playersHand);
-  const discardPileToShow = discardPile[discardPile.length - 1];
-
-  await game.update({
-    gameState: {
-      status: game.gameState.status,
-      score: game.gameState.score,
-      round: {
-        cardDeck: game.gameState.round.cardDeck,
-        discardPile,
-        playersHand,
-        playersDeadwoodValue,
-        discardPileToShow,
-      },
-    },
-  })
-
-  response.send({
-    id: game.id,
-    playerHand: game.gameState.round.playersHand,
-    score: game.gameState.score,
-    playerDeadwood: game.gameState.round.playersDeadwoodValue,
-    discardCardForPicking: game.gameState.round.discardPileToShow,
-  });
-
 }
 
 const drawingFromDeck = async function (game, playersHandIndex) {
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   sortHandBy(playerHand, 'rank');
-  const cardDeck = game.gameState.round.cardDeck;     
+  const cardDeck = game.gameState.round.cardDeck;
+  console.log('carddeck', cardDeck.length);     
   playerHand.push(cardDeck.pop()); 
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
 
@@ -472,7 +469,7 @@ const drawingFromDiscard = async function (game, playersHandIndex) {
       status: game.gameState.status,
       score: game.gameState.score,
       round: {
-        cardDeck: game.gameState.cardDeck,
+        cardDeck: game.gameState.round.cardDeck,
         discardPile,
         playersHand,
         playersDeadwoodValue,
@@ -489,12 +486,9 @@ const discardingFromHand = async function (game, cardIndex, response, playersHan
   const discardedCard = playerHand.splice(cardIndex, 1);
   const discardPile = game.gameState.round.discardPile; 
   sortHandBy(playerHand, 'rank');
-  console.log('discardedCard', discardedCard);
-  console.log('discardPile', discardPile);
+  
   discardPile.push(discardedCard[0]); 
-  console.log('discardPile after push', discardPile);
   const discardPileToShow = discardPile[discardPile.length - 1];
-  console.log('discardPileToShow after push', discardPileToShow);
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
 
   await game.update({
@@ -502,7 +496,7 @@ const discardingFromHand = async function (game, cardIndex, response, playersHan
       status: game.gameState.status,
       score: game.gameState.score,
       round: {
-        cardDeck: game.gameState.cardDeck,
+        cardDeck: game.gameState.round.cardDeck,
         discardPile,
         playersHand,
         playersDeadwoodValue,
@@ -659,8 +653,20 @@ export default function initGamesController(db) {
   const autoDrawDiscard = async (request, response) => {
     try {
       // get the game by the ID passed in the request
-      const game = await db.Game.findByPk(request.params.id);
-      automatingDrawDiscard(game, response);
+      let game = await db.Game.findByPk(request.params.id);
+      const gameIndex = request.params.id;
+      await automatingDrawDiscard(game, gameIndex, response);
+      game = await db.Game.findByPk(request.params.id);
+      await autoDiscardFromDeadwood(game, computer);
+      game = await db.Game.findByPk(request.params.id);
+
+      response.send({
+        id: game.id,
+        playerHand: game.gameState.round.playersHand,
+        score: game.gameState.score,
+        playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        discardCardForPicking: game.gameState.round.discardPileToShow,
+      });
       
     } catch (error) {
       response.status(500).send(error);
