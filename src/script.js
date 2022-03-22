@@ -285,10 +285,25 @@ boardMiddleSection.appendChild(gameFunctionsContainer);
 
 const leftButtonContainer = createContainer('leftButtonContainer');
 leftButtonContainer.classList.add('playing-deck-btn-container');
+
+
 const ginBtn = createButton('ginBtn', 'Gin');
 ginBtn.classList.add('btn');
 ginBtn.style.visibility = "hidden";
+
+const bigGinBtn = createButton('bigGinBtn', 'Gin');
+bigGinBtn.classList.add('btn');
+bigGinBtn.style.visibility = "hidden";
+
+const knockBtn = createButton('knockBtn', 'Gin');
+knockBtn.classList.add('btn');
+knockBtn.style.visibility = "hidden";
+
 leftButtonContainer.appendChild(ginBtn);
+leftButtonContainer.appendChild(bigGinBtn);
+leftButtonContainer.appendChild(knockBtn);
+
+
 
 const rightButtoncontainer = createContainer('rightButtoncontainer');
 rightButtoncontainer.classList.add('playing-deck-btn-container')
