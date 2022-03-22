@@ -108,6 +108,40 @@ const showCard = (card) => {
  * ========================================================
  * ========================================================
  */
+
+// login button functionality
+// CONSIDER USING TRY CATCH FOR 1 ERROR HANDLING ONL
+const userLogIn = () => {
+  axios
+    .post('/login', {
+      email: document.querySelector('#email').value,
+      password: document.querySelector('#password').value,
+    })
+    .then((response) => {
+      console.log(response.data);
+      loginDiv.remove();
+      1;
+      const dashboardDiv = document.createElement('div');
+      gameContainer.appendChild(dashboardDiv);
+      dashboardDiv.appendChild(userDiv);
+
+      // create game btn
+
+      axios
+        .get('/user')
+        .then((response1) => {
+          console.log(response1.data);
+          userDiv.innerText = `Logged in as: ${response1.data.user.email}`;
+          // manipulate DOM, set up create game button
+          gameContainer.appendChild(createGameBtn);
+        })
+        .catch((error) => console.log(error));
+    })
+    .catch((error) => console.log(error));
+};
+
+
+
 const createGame = function () {
   // Make a request to create a new game
   axios.post('/games')
@@ -128,11 +162,16 @@ const createGame = function () {
       // handle error
       console.log(error);
     });
+    console.log('game created');
 };
 
 const passingDiscardCard = () => {
+  console.log('user selected pass');
+
   passBtn.style.visibility = "hidden";
   gameHelpText.innerText = `Opponent's turn`
+
+  console.log('computer turn if pass');
 
   setTimeout(() => {
     axios.put(`/games/${currentGame.id}/pass`)
@@ -149,11 +188,13 @@ const passingDiscardCard = () => {
       console.log(error);
     });
   
+  console.log('computer decided');
   gameHelpText.innerText = `Your turn`
   }, 3000);
   
   playingDeck.style.pointerEvents = 'auto';
   discardPile.style.pointerEvents = 'auto';
+
 
 }
 
@@ -170,9 +211,9 @@ const drawingFromDeck = () => {
       refreshGameBoard(currentGame, true);
       if(currentGame.playerDeadwood[player2] < 10){
         knockBtn.style.visibility = "visible";
-      } else if (currentGame.playerDeadwoodList[player2].length = 1){
+      } else if (currentGame.playersDeadwoodList[player2].length === 1){
         ginBtn.style.visibility = "visible";
-      } else if (currentGame.playerDeadwoodList[player2].length = 0){
+      } else if (currentGame.playersDeadwoodList[player2].length === 0){
         bigGinBtn.style.visibility = "visible";
       }
     })
@@ -268,6 +309,38 @@ const clickToDiscard = (card, index) => {
  * ========================================================
  * ========================================================
  */
+
+// login
+const loginDiv = createContainer('loginDiv');
+document.body.appendChild(loginDiv);
+
+const emailDiv = createContainer('emailDiv');
+loginDiv.appendChild(emailDiv);
+
+const emailLabel = createLabel('email', 'Email');
+emailDiv.appendChild(emailLabel);
+
+const emailInput = createInput('email', 'Email', '', true);
+emailDiv.appendChild(emailInput);
+
+const passwordDiv = createContainer('passwordDiv');;
+loginDiv.appendChild(passwordDiv);
+
+const passwordLabel = createLabel('password', 'Password');
+passwordDiv.appendChild(passwordLabel);
+
+const passwordInput = createInput('password', 'Password', '', true);;
+passwordDiv.appendChild(passwordInput);
+
+const loginBtn = createButton('loginBtn', 'loginBtn', userLogIn);
+loginBtn.setAttribute('type', 'submit');
+loginDiv.appendChild(loginBtn);
+
+const userDiv = createContainer('userDiv');;
+
+// game
+
+const createGameBtn = createButton('createGameBtn', 'createGameBtn', createGame)
 
 const boardUpperSection = createContainer('boardUpperSection');
 const boardMiddleSection = createContainer('boardMiddleSection');
@@ -488,8 +561,6 @@ const refreshGameBoard = (gameData, canDiscardHand) => {
 
 
 
- 
-
 
 
 
@@ -506,5 +577,3 @@ const refreshGameBoard = (gameData, canDiscardHand) => {
  * ========================================================
  */
 
-const createGameBtn = createButton('createGameBtn', 'createGameBtn', createGame)
-document.body.appendChild(createGameBtn);
