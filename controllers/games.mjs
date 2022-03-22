@@ -196,7 +196,8 @@ const getDeadwoodinHand = function (playerHand) {
   }
 
   for(let i = 0; i < xOfAKind.length; i += 1){
-    for(let j = 0; j < deadwoodHand.length; j+= 1){
+    const deadwoodLength = deadwoodHand.length;
+    for(let j = 0; j < deadwoodLength; j+= 1){
       if(deadwoodHand[j].name === xOfAKind[i]){
         deadwoodHand.splice(j, 1);
       }
