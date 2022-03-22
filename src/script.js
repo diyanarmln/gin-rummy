@@ -208,7 +208,6 @@ const drawingFromDiscard = () => {
 }
 
 const clickToDiscard = (card, index) => {
-  console.log('cardIndex', index);
   // setTimeout(() => {
     axios.put(`/games/${currentGame.id}/discardFromHand/${index}`)
     .then((response) => {

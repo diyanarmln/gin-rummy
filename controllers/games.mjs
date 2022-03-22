@@ -350,9 +350,9 @@ const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
 
   const playerDeadwood = getDeadwoodinHand(playerHand); 
   const isHighestDeadwood = playerDeadwood.pop(); 
-  const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
-  const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
-  discardPile.push(discardedCard[0]);
+  // const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
+  // const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
+  discardPile.push(isHighestDeadwood);
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
   const discardPileToShow = discardPile[discardPile.length - 1];
 
@@ -390,7 +390,7 @@ const autoPass = async function (game, response, playerHandIndex) {
     const discardPile = game.gameState.round.discardPile; 
     playerHand.push(discardPile.pop()); 
 
-    autoDiscard(playerHand, discardPile);
+    autoDiscardFromDeadwood(game, computer);
     const playersDeadwoodValue = getDeadwoodSum(playersHand);
     const discardPileToShow = discardPile[discardPile.length - 1];
 
@@ -418,25 +418,29 @@ const autoPass = async function (game, response, playerHandIndex) {
   }
 }
 
-const automatingDrawDiscard = async function (game, gameIndex, response) {
+const automatingDrawDiscard = async function (game) {
 
   const randomIndexForDrawType = getRandomIndex(2);
 
   if(randomIndexForDrawType === 0) {
     drawingFromDeck(game, computer);
+    console.log('auto draw deck')
   }
   else {
     drawingFromDiscard(game, computer);
+    console.log('auto draw discard')
   }
 }
 
 const drawingFromDeck = async function (game, playersHandIndex) {
+  console.log('reached');
   const playersHand = game.gameState.round.playersHand;
-  const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
-  sortHandBy(playerHand, 'rank');
+  // const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
+  sortHandBy(playersHand[playersHandIndex], 'rank');
+  console.log('comphand', playersHand[playersHandIndex]);
   const cardDeck = game.gameState.round.cardDeck;
-  console.log('carddeck', cardDeck.length);     
-  playerHand.push(cardDeck.pop()); 
+  playersHand[playersHandIndex].push(cardDeck.pop()); 
+  console.log('comphand', playersHand[playersHandIndex]);
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
 
   await game.update({
@@ -455,6 +459,8 @@ const drawingFromDeck = async function (game, playersHandIndex) {
 }
 
 const drawingFromDiscard = async function (game, playersHandIndex) {
+    console.log('reached');
+
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   sortHandBy(playerHand, 'rank');
@@ -654,8 +660,7 @@ export default function initGamesController(db) {
     try {
       // get the game by the ID passed in the request
       let game = await db.Game.findByPk(request.params.id);
-      const gameIndex = request.params.id;
-      await automatingDrawDiscard(game, gameIndex, response);
+      await automatingDrawDiscard(game);
       game = await db.Game.findByPk(request.params.id);
       await autoDiscardFromDeadwood(game, computer);
       game = await db.Game.findByPk(request.params.id);
