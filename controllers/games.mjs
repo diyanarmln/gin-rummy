@@ -349,9 +349,11 @@ const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
   const discardPile = game.gameState.round.discardPile; 
 
   const playerDeadwood = getDeadwoodinHand(playerHand); 
+  console.log('playerHand initial', playerHand);
   const isHighestDeadwood = playerDeadwood.pop(); 
-  // const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
-  // const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
+  const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
+  const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
+  console.log('playerHand after splice', playerHand);
   discardPile.push(isHighestDeadwood);
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
   const discardPileToShow = discardPile[discardPile.length - 1];
@@ -423,24 +425,21 @@ const automatingDrawDiscard = async function (game) {
   const randomIndexForDrawType = getRandomIndex(2);
 
   if(randomIndexForDrawType === 0) {
-    drawingFromDeck(game, computer);
+    await drawingFromDeck(game, computer);
     console.log('auto draw deck')
   }
   else {
-    drawingFromDiscard(game, computer);
+    await drawingFromDiscard(game, computer);
     console.log('auto draw discard')
   }
 }
 
 const drawingFromDeck = async function (game, playersHandIndex) {
-  console.log('reached');
   const playersHand = game.gameState.round.playersHand;
-  // const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   sortHandBy(playersHand[playersHandIndex], 'rank');
-  console.log('comphand', playersHand[playersHandIndex]);
   const cardDeck = game.gameState.round.cardDeck;
   playersHand[playersHandIndex].push(cardDeck.pop()); 
-  console.log('comphand', playersHand[playersHandIndex]);
+  console.log('playerhand length', playersHand[playersHandIndex].length)
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
 
   await game.update({
@@ -459,13 +458,13 @@ const drawingFromDeck = async function (game, playersHandIndex) {
 }
 
 const drawingFromDiscard = async function (game, playersHandIndex) {
-    console.log('reached');
 
   const playersHand = game.gameState.round.playersHand;
   const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   sortHandBy(playerHand, 'rank');
   const discardPile = game.gameState.round.discardPile; 
   playerHand.push(discardPile.pop()); 
+  console.log('playerhand length', playersHand[playersHandIndex].length)
   const discardPileToShow = discardPile[discardPile.length - 1];
 
   const playersDeadwoodValue = getDeadwoodSum(playersHand);
