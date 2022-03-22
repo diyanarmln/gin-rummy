@@ -168,6 +168,13 @@ const drawingFromDeck = () => {
       
       // display it out to the user
       refreshGameBoard(currentGame, true);
+      if(currentGame.playerDeadwood[player2] < 10){
+        knockBtn.style.visibility = "visible";
+      } else if (currentGame.playerDeadwoodList[player2].length = 1){
+        ginBtn.style.visibility = "visible";
+      } else if (currentGame.playerDeadwoodList[player2].length = 0){
+        bigGinBtn.style.visibility = "visible";
+      }
     })
     .catch((error) => {
       // handle error

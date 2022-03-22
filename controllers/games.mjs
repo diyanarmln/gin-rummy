@@ -168,44 +168,49 @@ const dealPlayerCards = function (deck) {
  */
 const getDeadwoodinHand = function (playerHand) {
 
-  let deadwoodHand = playerHand.map(a => {return {...a}})
-  // remove straights from deadwood
-  for (let i = 1; i < deadwoodHand.length - 1; i+=1){
-    if((deadwoodHand[i].rank === deadwoodHand[i-1].rank + 1) && (deadwoodHand[i].rank === deadwoodHand[i+1].rank - 1)){
-      deadwoodHand.splice(i+1, 1);
-      deadwoodHand.splice(i, 1);
-      deadwoodHand.splice(i-1, 1);
-    }
-  }
+  let deadwoodHands = [];
 
-  // remove 3 of same card from deadwood (tally)
-  let cardNameTally = {};
-  let xOfAKind = [];
-
-  for (let i = 0; i < deadwoodHand.length; i+=1){
-    const cardName = deadwoodHand[i].name;
-    if (cardName in cardNameTally){
-      cardNameTally[cardName] += 1;
-      if(cardNameTally[cardName] === 3){
-        xOfAKind.push(cardName);
+  for(let i = 0; i < playerHand.length; i += 1){
+    let deadwoodHand = playerHand[i].map(a => {return {...a}})
+    // remove straights from deadwood
+    for (let i = 1; i < deadwoodHand.length - 1; i+=1){
+      if((deadwoodHand[i].rank === deadwoodHand[i-1].rank + 1) && (deadwoodHand[i].rank === deadwoodHand[i+1].rank - 1)){
+        deadwoodHand.splice(i+1, 1);
+        deadwoodHand.splice(i, 1);
+        deadwoodHand.splice(i-1, 1);
       }
     }
-    else {
-      cardNameTally[cardName] = 1;
-    }
-  }
 
-  for(let i = 0; i < xOfAKind.length; i += 1){
-    const deadwoodLength = deadwoodHand.length;
-    for(let j = 0; j < deadwoodLength; j+= 1){
-      if(deadwoodHand[j].name === xOfAKind[i]){
-        deadwoodHand.splice(j, 1);
+    // remove 3 of same card from deadwood (tally)
+    let cardNameTally = {};
+    let xOfAKind = [];
+
+    for (let i = 0; i < deadwoodHand.length; i+=1){
+      const cardName = deadwoodHand[i].name;
+      if (cardName in cardNameTally){
+        cardNameTally[cardName] += 1;
+        if(cardNameTally[cardName] === 3){
+          xOfAKind.push(cardName);
+        }
+      }
+      else {
+        cardNameTally[cardName] = 1;
       }
     }
-  }
 
-  sortHandBy(deadwoodHand, 'deadwoodValue');
-  return deadwoodHand;
+    for(let i = 0; i < xOfAKind.length; i += 1){
+      const deadwoodLength = deadwoodHand.length;
+      for(let j = 0; j < deadwoodLength; j+= 1){
+        if(deadwoodHand[j].name === xOfAKind[i]){
+          deadwoodHand.splice(j, 1);
+        }
+      }
+    }
+
+    sortHandBy(deadwoodHand, 'deadwoodValue');
+    deadwoodHands.push(deadwoodHand);
+  }
+  return deadwoodHands;
 }
 
 /**
@@ -226,10 +231,10 @@ const sumDeadwoodCards = function (deadwoodCards) {
  * @param playersHand 
  * @returns an array of deadwood sum value for each player
  */
-const getDeadwoodSum = function (playersHand) {
+const getDeadwoodSum = function (deadwoodHand) {
   let playersDeadwood = [];
-  for (let i = 0; i < playersHand.length; i += 1){
-    playersDeadwood.push(sumDeadwoodCards(getDeadwoodinHand(playersHand[i])));
+  for (let i = 0; i < deadwoodHand.length; i += 1){
+    playersDeadwood.push(sumDeadwoodCards(deadwoodHand[i]));
   }
   return playersDeadwood;
 }
@@ -353,10 +358,11 @@ const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
   console.log('playerHand initial', playerHand);
   const isHighestDeadwood = playerDeadwood.pop(); 
   const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
-  const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
+  // const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
   console.log('playerHand after splice', playerHand);
   discardPile.push(isHighestDeadwood);
-  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+  const playersDeadwoodList = getDeadwoodinHand(playersHand);
+  const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
   const discardPileToShow = discardPile[discardPile.length - 1];
 
   await game.update({
@@ -368,6 +374,7 @@ const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
         discardPile,
         playersHand,
         playersDeadwoodValue,
+        playersDeadwoodList,
         discardPileToShow,
       },
     },
@@ -383,6 +390,7 @@ const autoPass = async function (game, response, playerHandIndex) {
       playerHand: game.gameState.round.playersHand,
       score: game.gameState.score,
       playerDeadwood: game.gameState.round.playersDeadwoodValue,
+      playersDeadwoodList: game.gameState.round.playersDeadwoodList,
       discardCardForPicking: game.gameState.round.discardPileToShow,
     });
   }
@@ -394,7 +402,8 @@ const autoPass = async function (game, response, playerHandIndex) {
     playerHand.push(discardPile.pop()); 
 
     autoDiscardFromDeadwood(game, computer);
-    const playersDeadwoodValue = getDeadwoodSum(playersHand);
+    const playersDeadwoodList = getDeadwoodinHand(playersHand);
+    const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
     const discardPileToShow = discardPile[discardPile.length - 1];
 
     await game.update({
@@ -406,6 +415,7 @@ const autoPass = async function (game, response, playerHandIndex) {
           discardPile,
           playersHand,
           playersDeadwoodValue,
+          playersDeadwoodList,
           discardPileToShow,
         },
       },
@@ -416,6 +426,7 @@ const autoPass = async function (game, response, playerHandIndex) {
       playerHand: game.gameState.round.playersHand,
       score: game.gameState.score,
       playerDeadwood: game.gameState.round.playersDeadwoodValue,
+      playersDeadwoodList: game.gameState.round.playersDeadwoodList,
       discardCardForPicking: game.gameState.round.discardPileToShow,
     });
   }
@@ -441,7 +452,8 @@ const drawingFromDeck = async function (game, playersHandIndex) {
   const cardDeck = game.gameState.round.cardDeck;
   playersHand[playersHandIndex].push(cardDeck.pop()); 
   console.log('playerhand length', playersHand[playersHandIndex].length)
-  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+  const playersDeadwoodList = getDeadwoodinHand(playersHand);
+  const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
 
   await game.update({
     gameState: {
@@ -452,6 +464,7 @@ const drawingFromDeck = async function (game, playersHandIndex) {
         discardPile: game.gameState.round.discardPile,
         playersHand,
         playersDeadwoodValue,
+        playersDeadwoodList,
         discardPileToShow: game.gameState.round.discardPileToShow,
       },
     },
@@ -467,8 +480,8 @@ const drawingFromDiscard = async function (game, playersHandIndex) {
   playerHand.push(discardPile.pop()); 
   console.log('playerhand length', playersHand[playersHandIndex].length)
   const discardPileToShow = discardPile[discardPile.length - 1];
-
-  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+  const playersDeadwoodList = getDeadwoodinHand(playersHand);
+  const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
 
   await game.update({
     gameState: {
@@ -479,6 +492,7 @@ const drawingFromDiscard = async function (game, playersHandIndex) {
         discardPile,
         playersHand,
         playersDeadwoodValue,
+        playersDeadwoodList,
         discardPileToShow,
       },
     },
@@ -495,7 +509,8 @@ const discardingFromHand = async function (game, cardIndex, response, playersHan
   
   discardPile.push(discardedCard[0]); 
   const discardPileToShow = discardPile[discardPile.length - 1];
-  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+  const playersDeadwoodList = getDeadwoodinHand(playersHand);
+  const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
 
   await game.update({
     gameState: {
@@ -506,6 +521,7 @@ const discardingFromHand = async function (game, cardIndex, response, playersHan
         discardPile,
         playersHand,
         playersDeadwoodValue,
+        playersDeadwoodList,
         discardPileToShow,
       },
     },
@@ -516,6 +532,7 @@ const discardingFromHand = async function (game, cardIndex, response, playersHan
       playerHand: game.gameState.round.playersHand,
       score: game.gameState.score,
       playerDeadwood: game.gameState.round.playersDeadwoodValue,
+      playersDeadwoodList: game.gameState.round.playersDeadwoodList,
       discardCardForPicking: game.gameState.round.discardPileToShow,
     });
 }
@@ -553,7 +570,8 @@ export default function initGamesController(db) {
     const cardDeck = shuffleCards(makeDeck());
     const playersHand = dealPlayerCards(cardDeck);
     discardPile.push(cardDeck.pop());
-    const playersDeadwoodValue = getDeadwoodSum(playersHand);
+    const playersDeadwoodList = getDeadwoodinHand(playersHand);
+    const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
     const discardPileToShow = discardPile[discardPile.length - 1];
 
     const newGame = {
@@ -568,6 +586,7 @@ export default function initGamesController(db) {
           discardPile,
           playersHand,
           playersDeadwoodValue,
+          playersDeadwoodList,
           discardPileToShow,
         },
       },
@@ -586,6 +605,7 @@ export default function initGamesController(db) {
         playerHand: game.gameState.round.playersHand,
         score: game.gameState.score,
         playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        playersDeadwoodList: game.gameState.round.playersDeadwoodList,
         discardCardForPicking: game.gameState.round.discardPileToShow,
       });
     } catch (error) {
@@ -615,6 +635,7 @@ export default function initGamesController(db) {
         playerHand: game.gameState.round.playersHand,
         score: game.gameState.score,
         playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        playersDeadwoodList: game.gameState.round.playersDeadwoodList,
         discardCardForPicking: game.gameState.round.discardPileToShow,
       });
       
@@ -634,6 +655,7 @@ export default function initGamesController(db) {
         playerHand: game.gameState.round.playersHand,
         score: game.gameState.score,
         playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        playersDeadwoodList: game.gameState.round.playersDeadwoodList,
         discardCardForPicking: game.gameState.round.discardPileToShow,
       });
       
@@ -670,6 +692,7 @@ export default function initGamesController(db) {
         playerHand: game.gameState.round.playersHand,
         score: game.gameState.score,
         playerDeadwood: game.gameState.round.playersDeadwoodValue,
+        playersDeadwoodList: game.gameState.round.playersDeadwoodList,
         discardCardForPicking: game.gameState.round.discardPileToShow,
       });
       
