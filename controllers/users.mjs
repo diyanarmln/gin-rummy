@@ -1,4 +1,5 @@
 import jsSHA from 'jssha';
+import { resolve } from 'path';
 
 export default function initUsersController(db) {
   const login = async (req, res) => {
@@ -18,7 +19,7 @@ export default function initUsersController(db) {
       if (hashedPassword === user.password) {
         res.cookie('loggedIn', true);
         res.cookie('userId', user.id);
-        res.render('./games/index', { user });
+        res.sendFile(resolve('dist', 'main.html'));
       } else {
         res.send('you need to log in');
       }

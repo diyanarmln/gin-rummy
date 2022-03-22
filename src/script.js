@@ -36,7 +36,7 @@ const createInput = (inputType, inputName, inputValue, inputRequired) => {
   newInput.type = inputType;
   newInput.id = inputName;
   newInput.name = inputName;
-  newInput.value = inputValue;
+  // newInput.value = inputValue;
   newInput.required = inputRequired;
   return newInput;
 };
@@ -111,11 +111,11 @@ const showCard = (card) => {
 
 // login button functionality
 // CONSIDER USING TRY CATCH FOR 1 ERROR HANDLING ONL
-const userLogIn = () => {
+const userLogIn = function () {
   axios
     .post('/login', {
-      email: document.querySelector('#email').value,
-      password: document.querySelector('#password').value,
+      email: document.querySelector('#Email').value,
+      password: document.querySelector('#Password').value,
     })
     .then((response) => {
       console.log(response.data);
@@ -320,7 +320,7 @@ loginDiv.appendChild(emailDiv);
 const emailLabel = createLabel('email', 'Email');
 emailDiv.appendChild(emailLabel);
 
-const emailInput = createInput('email', 'Email', '', true);
+const emailInput = createInput('email', 'Email', true);
 emailDiv.appendChild(emailInput);
 
 const passwordDiv = createContainer('passwordDiv');;
@@ -329,11 +329,11 @@ loginDiv.appendChild(passwordDiv);
 const passwordLabel = createLabel('password', 'Password');
 passwordDiv.appendChild(passwordLabel);
 
-const passwordInput = createInput('password', 'Password', '', true);;
+const passwordInput = createInput('password', 'Password', true);;
 passwordDiv.appendChild(passwordInput);
 
 const loginBtn = createButton('loginBtn', 'loginBtn', userLogIn);
-loginBtn.setAttribute('type', 'submit');
+// loginBtn.setAttribute('type', 'submit');
 loginDiv.appendChild(loginBtn);
 
 const userDiv = createContainer('userDiv');;
@@ -382,8 +382,6 @@ knockBtn.style.visibility = "hidden";
 leftButtonContainer.appendChild(ginBtn);
 leftButtonContainer.appendChild(bigGinBtn);
 leftButtonContainer.appendChild(knockBtn);
-
-
 
 const rightButtoncontainer = createContainer('rightButtoncontainer');
 rightButtoncontainer.classList.add('playing-deck-btn-container')
