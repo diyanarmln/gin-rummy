@@ -1,6 +1,7 @@
-const player1 = 0;
+import axios from 'axios';
+
+// const player1 = 0;
 const player2 = 1;
-const playerTurn = 1;
 
 let currentGame = null;
 /*
@@ -50,7 +51,6 @@ const createButton = (btnId, btnText, btnCallback) => {
 };
 
 const showCard = (card) => {
-
   const cardDiv = createContainer('cardDiv', 'white');
   cardDiv.classList.add('card-front');
 
@@ -93,7 +93,6 @@ const showCard = (card) => {
   cardElement.classList.add('card');
 
   return cardDiv;
-
 };
 
 /*
@@ -111,6 +110,7 @@ const showCard = (card) => {
 
 // login button functionality
 // CONSIDER USING TRY CATCH FOR 1 ERROR HANDLING ONL
+// eslint-disable-next-line func-names
 const userLogIn = function () {
   axios
     .post('/login', {
@@ -119,10 +119,12 @@ const userLogIn = function () {
     })
     .then((response) => {
       console.log(response.data);
+      // eslint-disable-next-line no-use-before-define
       loginDiv.remove();
-      1;
       const dashboardDiv = document.createElement('div');
+      // eslint-disable-next-line no-use-before-define
       gameContainer.appendChild(dashboardDiv);
+      // eslint-disable-next-line no-use-before-define
       dashboardDiv.appendChild(userDiv);
 
       // create game btn
@@ -131,8 +133,10 @@ const userLogIn = function () {
         .get('/user')
         .then((response1) => {
           console.log(response1.data);
+          // eslint-disable-next-line no-use-before-define
           userDiv.innerText = `Logged in as: ${response1.data.user.email}`;
           // manipulate DOM, set up create game button
+          // eslint-disable-next-line no-use-before-define
           gameContainer.appendChild(createGameBtn);
         })
         .catch((error) => console.log(error));
@@ -140,162 +144,178 @@ const userLogIn = function () {
     .catch((error) => console.log(error));
 };
 
-
-
+// eslint-disable-next-line func-names
 const createGame = function () {
   // Make a request to create a new game
   axios.post('/games')
     .then((response) => {
-
       // set the global value to the new game.
       currentGame = response.data;
       console.log(response.data);
-      
+
       // display it out to the user
       // runGame(currentGame);
+      // eslint-disable-next-line no-use-before-define
       initGameBoardDom(currentGame);
+      // eslint-disable-next-line no-use-before-define
       createGameBtn.remove();
-
-      
     })
     .catch((error) => {
       // handle error
       console.log(error);
     });
-    console.log('game created');
+  console.log('game created');
 };
 
 const passingDiscardCard = () => {
   console.log('user selected pass');
 
-  passBtn.style.visibility = "hidden";
-  gameHelpText.innerText = `Opponent's turn`
+  // eslint-disable-next-line no-use-before-define
+  passBtn.style.visibility = 'hidden';
+  // eslint-disable-next-line no-use-before-define
+  gameHelpText.innerText = 'Opponent\'s turn';
 
   console.log('computer turn if pass');
 
   setTimeout(() => {
     axios.put(`/games/${currentGame.id}/pass`)
-    .then((response) => {
+      .then((response) => {
       // set the global value to the new game.
-      currentGame = response.data;
-      console.log(response.data);
-      
-      // display it out to the user
-      refreshGameBoard(currentGame);
-    })
-    .catch((error) => {
-      // handle error
-      console.log(error);
-    });
-  
-  console.log('computer decided');
-  gameHelpText.innerText = `Your turn`
+        currentGame = response.data;
+        console.log(response.data);
+        // display it out to the user
+        // eslint-disable-next-line no-use-before-define
+        refreshGameBoard(currentGame);
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
+
+    console.log('computer decided');
+    // eslint-disable-next-line no-use-before-define
+    gameHelpText.innerText = 'Your turn';
   }, 3000);
-  
+
+  // eslint-disable-next-line no-use-before-define
   playingDeck.style.pointerEvents = 'auto';
+  // eslint-disable-next-line no-use-before-define
   discardPile.style.pointerEvents = 'auto';
-
-
-}
+};
 
 const drawingFromDeck = () => {
-
   // setTimeout(() => {
-    axios.put(`/games/${currentGame.id}/drawDeck`)
+  axios.put(`/games/${currentGame.id}/drawDeck`)
     .then((response) => {
       // set the global value to the new game.
       currentGame = response.data;
       console.log(response.data);
-      
+
       // display it out to the user
+      // eslint-disable-next-line no-use-before-define
       refreshGameBoard(currentGame, true);
-      if(currentGame.playerDeadwood[player2] < 10){
-        knockBtn.style.visibility = "visible";
-      } else if (currentGame.playersDeadwoodList[player2].length === 1){
-        ginBtn.style.visibility = "visible";
-      } else if (currentGame.playersDeadwoodList[player2].length === 0){
-        bigGinBtn.style.visibility = "visible";
+      if (currentGame.playerDeadwood[player2] < 10) {
+        // eslint-disable-next-line no-use-before-define
+        knockBtn.style.visibility = 'visible';
+      } else if (currentGame.playersDeadwoodList[player2].length === 1) {
+        // eslint-disable-next-line no-use-before-define
+        ginBtn.style.visibility = 'visible';
+      } else if (currentGame.playersDeadwoodList[player2].length === 0) {
+        // eslint-disable-next-line no-use-before-define
+        bigGinBtn.style.visibility = 'visible';
       }
     })
     .catch((error) => {
       // handle error
       console.log(error);
     });
-  
-  gameHelpText.innerText = `Discard a card from your hand`
+
+  // eslint-disable-next-line no-use-before-define
+  gameHelpText.innerText = 'Discard a card from your hand';
   // }, 1000);
 
+  // eslint-disable-next-line no-use-before-define
   playingDeck.style.pointerEvents = 'none';
+  // eslint-disable-next-line no-use-before-define
   discardPile.style.pointerEvents = 'none';
-}
+};
 
 const drawingFromDiscard = () => {
-
-  passBtn.style.visibility = "hidden";
+  // eslint-disable-next-line no-use-before-define
+  passBtn.style.visibility = 'hidden';
 
   // setTimeout(() => {
-    axios.put(`/games/${currentGame.id}/drawDiscard`)
+  axios.put(`/games/${currentGame.id}/drawDiscard`)
     .then((response) => {
       // set the global value to the new game.
       currentGame = response.data;
       console.log(response.data);
-      
+
       // display it out to the user
+      // eslint-disable-next-line no-use-before-define
       refreshGameBoard(currentGame, true);
     })
     .catch((error) => {
       // handle error
       console.log(error);
     });
-  
-  gameHelpText.innerText = `Discard a card from your hand`
+
+  // eslint-disable-next-line no-use-before-define
+  gameHelpText.innerText = 'Discard a card from your hand';
   // }, 1000);
 
+  // eslint-disable-next-line no-use-before-define
   playingDeck.style.pointerEvents = 'none';
+  // eslint-disable-next-line no-use-before-define
   discardPile.style.pointerEvents = 'none';
-}
+};
 
 const clickToDiscard = (card, index) => {
   // setTimeout(() => {
-    axios.put(`/games/${currentGame.id}/discardFromHand/${index}`)
+  axios.put(`/games/${currentGame.id}/discardFromHand/${index}`)
     .then((response) => {
       // set the global value to the new game.
       currentGame = response.data;
       console.log(response.data);
-      
+
       // display it out to the user
+      // eslint-disable-next-line no-use-before-define
       refreshGameBoard(currentGame, false);
     })
     .catch((error) => {
       // handle error
       console.log(error);
     });
-  
-  gameHelpText.innerText = `Opponent's turn`
+
+  // eslint-disable-next-line no-use-before-define
+  gameHelpText.innerText = 'Opponent\'s turn';
   // }, 1000);
 
   setTimeout(() => {
     axios.put(`/games/${currentGame.id}/autoDrawDiscard`)
-    .then((response) => {
+      .then((response) => {
       // set the global value to the new game.
-      currentGame = response.data;
-      console.log(response.data);
-      
-      // display it out to the user
-      refreshGameBoard(currentGame, false);
-    })
-    .catch((error) => {
-      // handle error
-      console.log(error);
-    });
-  
-    gameHelpText.innerText = `Choose to draw from deck or discarded pile.`
+        currentGame = response.data;
+        console.log(response.data);
 
+        // display it out to the user
+        // eslint-disable-next-line no-use-before-define
+        refreshGameBoard(currentGame, false);
+      })
+      .catch((error) => {
+      // handle error
+        console.log(error);
+      });
+
+    // eslint-disable-next-line no-use-before-define
+    gameHelpText.innerText = 'Choose to draw from deck or discarded pile.';
   }, 3000);
 
+  // eslint-disable-next-line no-use-before-define
   playingDeck.style.pointerEvents = 'auto';
+  // eslint-disable-next-line no-use-before-define
   discardPile.style.pointerEvents = 'auto';
-}
+};
 
 /*
  * ========================================================
@@ -323,24 +343,24 @@ emailDiv.appendChild(emailLabel);
 const emailInput = createInput('email', 'Email', true);
 emailDiv.appendChild(emailInput);
 
-const passwordDiv = createContainer('passwordDiv');;
+const passwordDiv = createContainer('passwordDiv');
 loginDiv.appendChild(passwordDiv);
 
 const passwordLabel = createLabel('password', 'Password');
 passwordDiv.appendChild(passwordLabel);
 
-const passwordInput = createInput('password', 'Password', true);;
+const passwordInput = createInput('password', 'Password', true);
 passwordDiv.appendChild(passwordInput);
 
 const loginBtn = createButton('loginBtn', 'loginBtn', userLogIn);
 // loginBtn.setAttribute('type', 'submit');
 loginDiv.appendChild(loginBtn);
 
-const userDiv = createContainer('userDiv');;
+const userDiv = createContainer('userDiv');
 
 // game
 
-const createGameBtn = createButton('createGameBtn', 'createGameBtn', createGame)
+const createGameBtn = createButton('createGameBtn', 'createGameBtn', createGame);
 
 const boardUpperSection = createContainer('boardUpperSection');
 const boardMiddleSection = createContainer('boardMiddleSection');
@@ -348,13 +368,13 @@ const boardBottomSection = createContainer('boardBottomSection');
 const boardGameHelpText = createContainer('boardGameHelpText');
 
 // upper section of game board
-const opponentHandContainer = createContainer('opponentHandContainer')
+const opponentHandContainer = createContainer('opponentHandContainer');
 opponentHandContainer.classList.add('card-container', 'hand-position');
 boardUpperSection.appendChild(opponentHandContainer);
 
-for(let i = 0; i < 10; i += 1) {
+for (let i = 0; i < 10; i += 1) {
   const cardBack = createContainer('cardBack');
-  cardBack.classList.add('card-back')
+  cardBack.classList.add('card-back');
   opponentHandContainer.appendChild(cardBack);
 }
 
@@ -366,28 +386,27 @@ boardMiddleSection.appendChild(gameFunctionsContainer);
 const leftButtonContainer = createContainer('leftButtonContainer');
 leftButtonContainer.classList.add('playing-deck-btn-container');
 
-
 const ginBtn = createButton('ginBtn', 'Gin');
 ginBtn.classList.add('btn');
-ginBtn.style.visibility = "hidden";
+ginBtn.style.visibility = 'hidden';
 
 const bigGinBtn = createButton('bigGinBtn', 'Gin');
 bigGinBtn.classList.add('btn');
-bigGinBtn.style.visibility = "hidden";
+bigGinBtn.style.visibility = 'hidden';
 
 const knockBtn = createButton('knockBtn', 'Gin');
 knockBtn.classList.add('btn');
-knockBtn.style.visibility = "hidden";
+knockBtn.style.visibility = 'hidden';
 
 leftButtonContainer.appendChild(ginBtn);
 leftButtonContainer.appendChild(bigGinBtn);
 leftButtonContainer.appendChild(knockBtn);
 
 const rightButtoncontainer = createContainer('rightButtoncontainer');
-rightButtoncontainer.classList.add('playing-deck-btn-container')
+rightButtoncontainer.classList.add('playing-deck-btn-container');
 const passBtn = createButton('passBtn', 'Pass', passingDiscardCard);
 passBtn.classList.add('btn');
-passBtn.style.visibility = "hidden";
+passBtn.style.visibility = 'hidden';
 rightButtoncontainer.appendChild(passBtn);
 
 gameFunctionsContainer.appendChild(leftButtonContainer);
@@ -418,7 +437,7 @@ playerHandContainer.classList.add('card-container');
 boardBottomSection.appendChild(playerHandContainer);
 
 const deadwoodCounter = createContainer('deadwoodCounter');
-deadwoodCounter.classList.add('deadwoodContainer')
+deadwoodCounter.classList.add('deadwoodContainer');
 boardBottomSection.appendChild(deadwoodCounter);
 
 /*
@@ -434,21 +453,19 @@ boardBottomSection.appendChild(deadwoodCounter);
  * ========================================================
  */
 
-const gameContainer = document.getElementById('game-container')
-
+const gameContainer = document.getElementById('game-container');
 
 const initGameBoardDom = (gameData) => {
+  const playerHand = gameData.playerHand[1];
 
-  let playerHand = gameData.playerHand[1];
-
-  for(let i = 0; i < playerHand.length; i += 1) {
+  for (let i = 0; i < playerHand.length; i += 1) {
     const cardFront = showCard(playerHand[i]);
     playerHandContainer.appendChild(cardFront);
   }
 
   gameHelpText.innerText = 'test';
 
-  passBtn.style.visibility = "visible";
+  passBtn.style.visibility = 'visible';
 
   deadwoodCounter.innerText = `Deadwood: ${gameData.playerDeadwood[1]}`;
 
@@ -463,16 +480,15 @@ const initGameBoardDom = (gameData) => {
   gameContainer.appendChild(boardMiddleSection);
   gameContainer.appendChild(boardGameHelpText);
   gameContainer.appendChild(boardBottomSection);
-}
+};
 
 const refreshGameBoard = (gameData, canDiscardHand) => {
+  playerHandContainer.innerHTML = '';
+  discardPile.innerHTML = '';
 
-  playerHandContainer.innerHTML = "";
-  discardPile.innerHTML = "";
+  const playerHand = gameData.playerHand[1];
 
-  let playerHand = gameData.playerHand[1];
-
-  for(let i = 0; i < playerHand.length; i += 1) {
+  for (let i = 0; i < playerHand.length; i += 1) {
     const cardFront = showCard(playerHand[i]);
     if (canDiscardHand === true) {
       cardFront.addEventListener('click', (event) => {
@@ -492,7 +508,7 @@ const refreshGameBoard = (gameData, canDiscardHand) => {
   discardCardForPicking.classList.remove('card-front');
   discardCardForPicking.classList.add('discard-card-front');
   discardPile.appendChild(discardCardForPicking);
-}
+};
 
 // disable and hide buttons by default
 
@@ -516,7 +532,7 @@ const refreshGameBoard = (gameData, canDiscardHand) => {
 // computer turn
 // random action to draw from deck or discard
 // discard highest from deadwood
-// check deadwood value 
+// check deadwood value
 // enable/show gin if deadwood.length = 1
 // enable/show big gin if deadwood.length = 0
 // enable/show knock if deadwood sum <= 10
@@ -529,7 +545,7 @@ const refreshGameBoard = (gameData, canDiscardHand) => {
 // computer turn
 // random action to draw from deck or discard
 // discard highest from deadwood
-// check deadwood value 
+// check deadwood value
 // enable/show gin if deadwood.length = 1
 // enable/show big gin if deadwood.length = 0
 // enable/show knock if deadwood sum <= 10
@@ -556,22 +572,3 @@ const refreshGameBoard = (gameData, canDiscardHand) => {
 // else
 // initialise new round (controller)
 // create round
-
-
-
-
-
-
-/*
- * ========================================================
- * ========================================================
- * ========================================================
- * ========================================================
- *
- *                  Initial Screen
- *
- * ========================================================
- * ========================================================
- * ========================================================
- */
-

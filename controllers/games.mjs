@@ -1,7 +1,6 @@
-import e from "express";
-
-let player = 1;
-let computer = 0;
+/* eslint-disable func-names */
+const player = 1;
+const computer = 0;
 
 /*
  * ========================================================
@@ -17,8 +16,8 @@ let computer = 0;
  */
 
 /**
- * 
- * @param size 
+ *
+ * @param size
  * @returns random number given sample size
  */
 const getRandomIndex = function (size) {
@@ -26,8 +25,8 @@ const getRandomIndex = function (size) {
 };
 
 /**
- * 
- * @param cards 
+ *
+ * @param cards
  * @returns shuffled deck
  */
 const shuffleCards = function (cards) {
@@ -56,7 +55,7 @@ const shuffleCards = function (cards) {
 };
 
 /**
- * 
+ *
  * @returns new deck
  */
 const makeDeck = function () {
@@ -68,90 +67,89 @@ const makeDeck = function () {
   let cardOrder = 0;
 
   for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
-      // Store the current suit in a variable
-      const currentSuit = suits[suitIndex];
-      let symbol = '';
-      let color = '';
+    // Store the current suit in a variable
+    const currentSuit = suits[suitIndex];
+    let symbol = '';
+    let color = '';
 
-      if (currentSuit === 'hearts') {
-        symbol = '♥️';
-        color = 'red';
-      } else if (currentSuit === 'diamonds') {
-        symbol = '♦️';
-        color = 'red';
-      } else if (currentSuit === 'clubs') {
-        symbol = '♣️';
-        color = 'black';
-      } else if (currentSuit === 'spades') {
-        symbol = '♠️';
-        color = 'black';
+    if (currentSuit === 'hearts') {
+      symbol = '♥️';
+      color = 'red';
+    } else if (currentSuit === 'diamonds') {
+      symbol = '♦️';
+      color = 'red';
+    } else if (currentSuit === 'clubs') {
+      symbol = '♣️';
+      color = 'black';
+    } else if (currentSuit === 'spades') {
+      symbol = '♠️';
+      color = 'black';
+    }
+
+    for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
+      // By default, the card name is the same as rankCounter
+      let cardName = `${rankCounter}`;
+      let shortForm = `${rankCounter}`;
+      let deadwood = rankCounter;
+      cardOrder += 1;
+
+      // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
+      if (cardName === '1') {
+        cardName = 'ace';
+        shortForm = 'A';
+      } else if (cardName === '11') {
+        cardName = 'jack';
+        shortForm = 'J';
+        deadwood = 10;
+      } else if (cardName === '12') {
+        cardName = 'queen';
+        shortForm = 'Q';
+        deadwood = 10;
+      } else if (cardName === '13') {
+        cardName = 'king';
+        shortForm = 'K';
+        deadwood = 10;
       }
 
+      // Create a new card with the current name, suit, and rank
+      const card = {
+        name: cardName,
+        suit: currentSuit,
+        rank: cardOrder,
+        displayName: shortForm,
+        suitSymbol: symbol,
+        suitColour: color,
+        deadwoodValue: deadwood,
+        discard: false,
+      };
 
-      for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
-          // By default, the card name is the same as rankCounter
-          let cardName = `${rankCounter}`;
-          let shortForm = `${rankCounter}`;
-          let deadwood = rankCounter;
-          cardOrder += 1;
-
-          // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
-          if (cardName === '1') {
-            cardName = 'ace';
-            shortForm = 'A';
-          } else if (cardName === '11') {
-            cardName = 'jack';
-            shortForm = 'J';
-            deadwood = 10;
-          } else if (cardName === '12') {
-            cardName = 'queen';
-            shortForm = 'Q';
-            deadwood = 10;
-          } else if (cardName === '13') {
-            cardName = 'king';
-            shortForm = 'K';
-            deadwood = 10;
-          }
-
-          // Create a new card with the current name, suit, and rank
-          const card = {
-            name: cardName,
-            suit: currentSuit,
-            rank: cardOrder,
-            displayName: shortForm,
-            suitSymbol: symbol,
-            suitColour: color,
-            deadwoodValue: deadwood,
-            discard: false,
-          };
-
-          deck.push(card);
-        };
+      deck.push(card);
     }
+  }
   return deck;
 };
 
 /**
  * function to sort hand by rank
- * @param hand 
+ * @param hand
  */
 const sortHandBy = function (hand, method) {
-  hand.sort((a, b) => a[method] - b[method])
-}
+  hand.sort((a, b) => a[method] - b[method]);
+};
 
 /**
- * 
- * @param deck 
+ *
+ * @param deck
  * function to deal cards to player hand
  */
 const dealPlayerCards = function (deck) {
   let playersHand = [];
-  let player1Hand = [];
-  let player2Hand = [];
+  const player1Hand = [];
+  const player2Hand = [];
 
-  for (let handIndex = 0; handIndex < 10; handIndex += 1){
+  for (let handIndex = 0; handIndex < 10; handIndex += 1) {
     player1Hand.push(deck.pop());
-    for (let playerHandIndex = 0; playerHandIndex < 1; playerHandIndex += 1){
+    for (let playerHandIndex = 0; playerHandIndex < 1; playerHandIndex += 1) {
       player2Hand.push(deck.pop());
     }
   }
@@ -159,37 +157,39 @@ const dealPlayerCards = function (deck) {
   sortHandBy(player2Hand, 'rank');
   playersHand = [player1Hand, player2Hand];
   return playersHand;
-}
+};
 
 /**
  * function to identify deadwood cards in hand
- * @param playerHand 
- * @returns 
+ * @param playerHand
+ * @returns
  */
-const getDeadwoodinHand = function (playerHand) {
+const getDeadwoodinHand = function (playersHand) {
+  const deadwoodHands = [];
 
-  let deadwoodHands = [];
-
-  for(let i = 0; i < playerHand.length; i += 1){
-    let deadwoodHand = playerHand[i].map(a => {return {...a}})
+  for (let i = 0; i < playersHand.length; i += 1) {
+    const hand = playersHand[i];
+    const deadwoodHand = hand.map((a) => ({ ...a }));
+    console.log(hand.length, deadwoodHand.length);
     // remove straights from deadwood
-    for (let i = 1; i < deadwoodHand.length - 1; i+=1){
-      if((deadwoodHand[i].rank === deadwoodHand[i-1].rank + 1) && (deadwoodHand[i].rank === deadwoodHand[i+1].rank - 1)){
-        deadwoodHand.splice(i+1, 1);
-        deadwoodHand.splice(i, 1);
-        deadwoodHand.splice(i-1, 1);
+    for (let j = 1; j < deadwoodHand.length - 1; j += 1) {
+      // eslint-disable-next-line max-len
+      if ((deadwoodHand[j].rank === deadwoodHand[j - 1].rank + 1) && (deadwoodHand[j].rank === deadwoodHand[j + 1].rank - 1)) {
+        deadwoodHand.splice(j + 1, 1);
+        deadwoodHand.splice(j, 1);
+        deadwoodHand.splice(j - 1, 1);
       }
     }
 
     // remove 3 of same card from deadwood (tally)
-    let cardNameTally = {};
-    let xOfAKind = [];
+    const cardNameTally = {};
+    const xOfAKind = [];
 
-    for (let i = 0; i < deadwoodHand.length; i+=1){
-      const cardName = deadwoodHand[i].name;
-      if (cardName in cardNameTally){
+    for (let k = 0; k < deadwoodHand.length; k += 1) {
+      const cardName = deadwoodHand[k].name;
+      if (cardName in cardNameTally) {
         cardNameTally[cardName] += 1;
-        if(cardNameTally[cardName] === 3){
+        if (cardNameTally[cardName] === 3) {
           xOfAKind.push(cardName);
         }
       }
@@ -198,11 +198,11 @@ const getDeadwoodinHand = function (playerHand) {
       }
     }
 
-    for(let i = 0; i < xOfAKind.length; i += 1){
+    for (let l = 0; l < xOfAKind.length; l += 1) {
       const deadwoodLength = deadwoodHand.length;
-      for(let j = 0; j < deadwoodLength; j+= 1){
-        if(deadwoodHand[j].name === xOfAKind[i]){
-          deadwoodHand.splice(j, 1);
+      for (let m = 0; m < deadwoodLength; m += 1) {
+        if (deadwoodHand[m].name === xOfAKind[l]) {
+          deadwoodHand.splice(m, 1);
         }
       }
     }
@@ -211,158 +211,155 @@ const getDeadwoodinHand = function (playerHand) {
     deadwoodHands.push(deadwoodHand);
   }
   return deadwoodHands;
-}
+};
 
 /**
- * 
- * @param deadwoodCards 
+ *
+ * @param deadwoodCards
  * @returns sum of deadwood cards value
  */
 const sumDeadwoodCards = function (deadwoodCards) {
   const sum = deadwoodCards.reduce(
-    (previousValue, currentValue) => previousValue + currentValue.deadwoodValue
-    , 0
-  )
+    (previousValue, currentValue) => previousValue + currentValue.deadwoodValue,
+    0,
+  );
   return sum;
-}
+};
 
 /**
- * 
- * @param playersHand 
+ *
+ * @param playersHand
  * @returns an array of deadwood sum value for each player
  */
 const getDeadwoodSum = function (deadwoodHand) {
-  let playersDeadwood = [];
-  for (let i = 0; i < deadwoodHand.length; i += 1){
+  const playersDeadwood = [];
+  for (let i = 0; i < deadwoodHand.length; i += 1) {
     playersDeadwood.push(sumDeadwoodCards(deadwoodHand[i]));
   }
   return playersDeadwood;
-}
+};
 
-let testPlayerHand = [
-  {
-    deadwoodValue: 8,
-    discard: false,
-    displayName: "Q",
-    name: "queen",
-    rank: 8,
-    suit: "hearts",
-    suitColour: "red",
-    suitSymbol: "♥️",
-  },
-  {
-    deadwoodValue: 1,
-    discard: false,
-    displayName: "A",
-    name: "ace",
-    rank: 14,
-    suit: "diamonds",
-    suitColour: "red",
-    suitSymbol: "♦️",
-  },
-  {
-    deadwoodValue: 2,
-    discard: false,
-    displayName: "2",
-    name: "2",
-    rank: 15,
-    suit: "diamonds",
-    suitColour: "red",
-    suitSymbol: "♦️",
-  },
-  {
-    deadwoodValue: 3,
-    discard: false,
-    displayName: "3",
-    name: "3",
-    rank: 16,
-    suit: "diamonds",
-    suitColour: "red",
-    suitSymbol: "♦️",
-  },
-  {
-    deadwoodValue: 10,
-    discard: false,
-    displayName: "Q",
-    name: "queen",
-    rank: 25,
-    suit: "diamonds",
-    suitColour: "red",
-    suitSymbol: "♦️",
-  },
-  {
-    deadwoodValue: 1,
-    discard: false,
-    displayName: "A",
-    name: "ace",
-    rank: 27,
-    suit: "clubs",
-    suitColour: "black",
-    suitSymbol: "♣️",
-  },
-  {
-    deadwoodValue: 3,
-    discard: false,
-    displayName: "3",
-    name: "3",
-    rank: 29,
-    suit: "clubs",
-    suitColour: "black",
-    suitSymbol: "♣️",
-  },
-  {
-    deadwoodValue: 6,
-    discard: false,
-    displayName: "6",
-    name: "6",
-    rank: 32,
-    suit: "clubs",
-    suitColour: "black",
-    suitSymbol: "♣️",
-  },
-  {
-    deadwoodValue: 10,
-    discard: false,
-    displayName: "Q",
-    name: "queen",
-    rank: 38,
-    suit: "clubs",
-    suitColour: "black",
-    suitSymbol: "♣️",
-  },
-  {
-    deadwoodValue: 10,
-    discard: false,
-    displayName: "K",
-    name: "king",
-    rank: 39,
-    suit: "clubs",
-    suitColour: "black",
-    suitSymbol: "♣️",
-  },
-]
+// const testPlayerHand = [
+//   {
+//     deadwoodValue: 8,
+//     discard: false,
+//     displayName: 'Q',
+//     name: 'queen',
+//     rank: 8,
+//     suit: 'hearts',
+//     suitColour: 'red',
+//     suitSymbol: '♥️',
+//   },
+//   {
+//     deadwoodValue: 1,
+//     discard: false,
+//     displayName: 'A',
+//     name: 'ace',
+//     rank: 14,
+//     suit: 'diamonds',
+//     suitColour: 'red',
+//     suitSymbol: '♦️',
+//   },
+//   {
+//     deadwoodValue: 2,
+//     discard: false,
+//     displayName: '2',
+//     name: '2',
+//     rank: 15,
+//     suit: 'diamonds',
+//     suitColour: 'red',
+//     suitSymbol: '♦️',
+//   },
+//   {
+//     deadwoodValue: 3,
+//     discard: false,
+//     displayName: '3',
+//     name: '3',
+//     rank: 16,
+//     suit: 'diamonds',
+//     suitColour: 'red',
+//     suitSymbol: '♦️',
+//   },
+//   {
+//     deadwoodValue: 10,
+//     discard: false,
+//     displayName: 'Q',
+//     name: 'queen',
+//     rank: 25,
+//     suit: 'diamonds',
+//     suitColour: 'red',
+//     suitSymbol: '♦️',
+//   },
+//   {
+//     deadwoodValue: 1,
+//     discard: false,
+//     displayName: 'A',
+//     name: 'ace',
+//     rank: 27,
+//     suit: 'clubs',
+//     suitColour: 'black',
+//     suitSymbol: '♣️',
+//   },
+//   {
+//     deadwoodValue: 3,
+//     discard: false,
+//     displayName: '3',
+//     name: '3',
+//     rank: 29,
+//     suit: 'clubs',
+//     suitColour: 'black',
+//     suitSymbol: '♣️',
+//   },
+//   {
+//     deadwoodValue: 6,
+//     discard: false,
+//     displayName: '6',
+//     name: '6',
+//     rank: 32,
+//     suit: 'clubs',
+//     suitColour: 'black',
+//     suitSymbol: '♣️',
+//   },
+//   {
+//     deadwoodValue: 10,
+//     discard: false,
+//     displayName: 'Q',
+//     name: 'queen',
+//     rank: 38,
+//     suit: 'clubs',
+//     suitColour: 'black',
+//     suitSymbol: '♣️',
+//   },
+//   {
+//     deadwoodValue: 10,
+//     discard: false,
+//     displayName: 'K',
+//     name: 'king',
+//     rank: 39,
+//     suit: 'clubs',
+//     suitColour: 'black',
+//     suitSymbol: '♣️',
+//   },
+// ];
 
 const findCardIndex = function (arrayOfCards, value) {
-  const cardIndex = arrayOfCards.map(e => e.rank).indexOf(value);
+  const cardIndex = arrayOfCards.map((e) => e.rank).indexOf(value);
   return cardIndex;
-}
+};
 
 const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
-
-  const playersHand = game.gameState.round.playersHand;
-  const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
+  const { playersHand } = game.gameState.round;
+  const playerHand = game.gameState.round.playersHand[playersHandIndex];
   sortHandBy(playerHand, 'rank');
-  const discardPile = game.gameState.round.discardPile; 
+  const { discardPile } = game.gameState.round;
 
-  const playerDeadwood = getDeadwoodinHand(playerHand); 
-  console.log('playerHand initial', playerHand);
-  const isHighestDeadwood = playerDeadwood.pop(); 
-  const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank); 
-  // const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1); 
-  console.log('playerHand after splice', playerHand);
-  discardPile.push(isHighestDeadwood);
   const playersDeadwoodList = getDeadwoodinHand(playersHand);
-  const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
+  const deadwoodHand = playersDeadwoodList[computer];
+  const isHighestDeadwood = deadwoodHand[deadwoodHand.length - 1];
+  const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank);
+  const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1)[0];
+  discardPile.push(discardedCard);
+  const playersDeadwoodValue = getDeadwoodSum(playersHand);
   const discardPileToShow = discardPile[discardPile.length - 1];
 
   await game.update({
@@ -378,13 +375,13 @@ const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
         discardPileToShow,
       },
     },
-  })
-}
+  });
+};
 
 const autoPass = async function (game, response, playerHandIndex) {
   const randomIndexForPassing = getRandomIndex(2);
 
-  if(randomIndexForPassing === 0){
+  if (randomIndexForPassing === 0) {
     response.send({
       id: game.id,
       playerHand: game.gameState.round.playersHand,
@@ -396,10 +393,10 @@ const autoPass = async function (game, response, playerHandIndex) {
   }
 
   else {
-    const playersHand = game.gameState.round.playersHand;
-    const playerHand = game.gameState.round.playersHand[playerHandIndex]; 
-    const discardPile = game.gameState.round.discardPile; 
-    playerHand.push(discardPile.pop()); 
+    const { playersHand } = game.gameState.round;
+    const playerHand = game.gameState.round.playersHand[playerHandIndex];
+    const { discardPile } = game.gameState.round;
+    playerHand.push(discardPile.pop());
 
     autoDiscardFromDeadwood(game, computer);
     const playersDeadwoodList = getDeadwoodinHand(playersHand);
@@ -419,7 +416,7 @@ const autoPass = async function (game, response, playerHandIndex) {
           discardPileToShow,
         },
       },
-    })
+    });
 
     response.send({
       id: game.id,
@@ -430,28 +427,14 @@ const autoPass = async function (game, response, playerHandIndex) {
       discardCardForPicking: game.gameState.round.discardPileToShow,
     });
   }
-}
-
-const automatingDrawDiscard = async function (game) {
-
-  const randomIndexForDrawType = getRandomIndex(2);
-
-  if(randomIndexForDrawType === 0) {
-    await drawingFromDeck(game, computer);
-    console.log('auto draw deck')
-  }
-  else {
-    await drawingFromDiscard(game, computer);
-    console.log('auto draw discard')
-  }
-}
+};
 
 const drawingFromDeck = async function (game, playersHandIndex) {
-  const playersHand = game.gameState.round.playersHand;
-  sortHandBy(playersHand[playersHandIndex], 'rank');
-  const cardDeck = game.gameState.round.cardDeck;
-  playersHand[playersHandIndex].push(cardDeck.pop()); 
-  console.log('playerhand length', playersHand[playersHandIndex].length)
+  const { playersHand } = game.gameState.round;
+  const playerHand = playersHand[playersHandIndex];
+  sortHandBy(playerHand, 'rank');
+  const { cardDeck } = game.gameState.round;
+  playerHand.push(cardDeck.pop());
   const playersDeadwoodList = getDeadwoodinHand(playersHand);
   const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
 
@@ -468,17 +451,14 @@ const drawingFromDeck = async function (game, playersHandIndex) {
         discardPileToShow: game.gameState.round.discardPileToShow,
       },
     },
-  })
-}
+  });
+};
 
 const drawingFromDiscard = async function (game, playersHandIndex) {
-
-  const playersHand = game.gameState.round.playersHand;
-  const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
-  sortHandBy(playerHand, 'rank');
-  const discardPile = game.gameState.round.discardPile; 
-  playerHand.push(discardPile.pop()); 
-  console.log('playerhand length', playersHand[playersHandIndex].length)
+  const { playersHand } = game.gameState.round;
+  const playerHand = game.gameState.round.playersHand[playersHandIndex];
+  const { discardPile } = game.gameState.round;
+  playerHand.push(discardPile.pop());
   const discardPileToShow = discardPile[discardPile.length - 1];
   const playersDeadwoodList = getDeadwoodinHand(playersHand);
   const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
@@ -496,18 +476,32 @@ const drawingFromDiscard = async function (game, playersHandIndex) {
         discardPileToShow,
       },
     },
-  })
-}
+  });
+};
+
+const automatingDrawDiscard = async function (game) {
+  const randomIndexForDrawType = getRandomIndex(2);
+
+  if (randomIndexForDrawType === 0) {
+    await drawingFromDeck(game, computer);
+    console.log('auto draw deck');
+  }
+  else {
+    await drawingFromDiscard(game, computer);
+    console.log('auto draw discard');
+  }
+};
 
 const discardingFromHand = async function (game, cardIndex, response, playersHandIndex) {
+  const { playersHand } = game.gameState.round;
+  const playerHand = playersHand[playersHandIndex];
+  const { discardPile } = game.gameState.round;
 
-  const playersHand = game.gameState.round.playersHand;
-  const playerHand = game.gameState.round.playersHand[playersHandIndex]; 
   const discardedCard = playerHand.splice(cardIndex, 1);
-  const discardPile = game.gameState.round.discardPile; 
+  console.log('discarded from hand', discardedCard);
   sortHandBy(playerHand, 'rank');
-  
-  discardPile.push(discardedCard[0]); 
+  discardPile.push(discardedCard[0]);
+
   const discardPileToShow = discardPile[discardPile.length - 1];
   const playersDeadwoodList = getDeadwoodinHand(playersHand);
   const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
@@ -525,17 +519,17 @@ const discardingFromHand = async function (game, cardIndex, response, playersHan
         discardPileToShow,
       },
     },
-  })
+  });
 
   response.send({
-      id: game.id,
-      playerHand: game.gameState.round.playersHand,
-      score: game.gameState.score,
-      playerDeadwood: game.gameState.round.playersDeadwoodValue,
-      playersDeadwoodList: game.gameState.round.playersDeadwoodList,
-      discardCardForPicking: game.gameState.round.discardPileToShow,
-    });
-}
+    id: game.id,
+    playerHand: game.gameState.round.playersHand,
+    score: game.gameState.score,
+    playerDeadwood: game.gameState.round.playersDeadwoodValue,
+    playersDeadwoodList: game.gameState.round.playersDeadwoodList,
+    discardCardForPicking: game.gameState.round.discardPileToShow,
+  });
+};
 
 /*
  * ========================================================
@@ -551,7 +545,6 @@ const discardingFromHand = async function (game, cardIndex, response, playersHan
  */
 
 export default function initGamesController(db) {
-
 //   let result;
 
   // render the main page
@@ -561,10 +554,9 @@ export default function initGamesController(db) {
 
   // create a new game. Insert a new row in the DB.
   const createGame = async (request, response) => {
-
-    let player1Score = 0; 
-    let player2Score = 0; 
-    let discardPile = [];
+    const player1Score = 0;
+    const player2Score = 0;
+    const discardPile = [];
 
     // deal out a new shuffled deck for this game.
     const cardDeck = shuffleCards(makeDeck());
@@ -579,7 +571,7 @@ export default function initGamesController(db) {
         status: 'started',
         score: {
           player1: player1Score,
-          player2: player2Score
+          player2: player2Score,
         },
         round: {
           cardDeck,
@@ -618,7 +610,6 @@ export default function initGamesController(db) {
       // get the game by the ID passed in the request
       const game = await db.Game.findByPk(request.params.id);
       autoPass(game, response, computer);
-      
     } catch (error) {
       response.status(500).send(error);
       console.log(error);
@@ -638,13 +629,12 @@ export default function initGamesController(db) {
         playersDeadwoodList: game.gameState.round.playersDeadwoodList,
         discardCardForPicking: game.gameState.round.discardPileToShow,
       });
-      
     } catch (error) {
       response.status(500).send(error);
       console.log(error);
     }
-  }
-  
+  };
+
   const drawDiscard = async (request, response) => {
     try {
       // get the game by the ID passed in the request
@@ -658,12 +648,11 @@ export default function initGamesController(db) {
         playersDeadwoodList: game.gameState.round.playersDeadwoodList,
         discardCardForPicking: game.gameState.round.discardPileToShow,
       });
-      
     } catch (error) {
       response.status(500).send(error);
       console.log(error);
     }
-  }
+  };
 
   const discardFromHand = async (request, response) => {
     try {
@@ -671,12 +660,11 @@ export default function initGamesController(db) {
       const game = await db.Game.findByPk(request.params.id);
       const cardIndex = request.params.cardId;
       discardingFromHand(game, cardIndex, response, player);
-      
     } catch (error) {
       response.status(500).send(error);
       console.log(error);
     }
-  }
+  };
 
   const autoDrawDiscard = async (request, response) => {
     try {
@@ -695,12 +683,11 @@ export default function initGamesController(db) {
         playersDeadwoodList: game.gameState.round.playersDeadwoodList,
         discardCardForPicking: game.gameState.round.discardPileToShow,
       });
-      
     } catch (error) {
       response.status(500).send(error);
       console.log(error);
     }
-  }
+  };
 
   // return all functions we define in an object
   // refer to the routes file above to see this used
