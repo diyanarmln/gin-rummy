@@ -368,7 +368,7 @@ const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
   const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank);
   const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1)[0];
   discardPile.push(discardedCard);
-  const playersDeadwoodValue = getDeadwoodSum(playersHand);
+  const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
   const discardPileToShow = discardPile[discardPile.length - 1];
 
   await game.update({
