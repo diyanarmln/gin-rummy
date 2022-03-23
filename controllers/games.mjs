@@ -165,12 +165,13 @@ const dealPlayerCards = function (deck) {
  * @returns
  */
 const getDeadwoodinHand = function (playersHand) {
+  // playersHand [[{}, {},], [{}, {},]]
   const deadwoodHands = [];
 
   for (let i = 0; i < playersHand.length; i += 1) {
-    const hand = playersHand[i];
+    const hand = playersHand[i]; // [{},{}]
     const deadwoodHand = hand.map((a) => ({ ...a }));
-    console.log(hand.length, deadwoodHand.length);
+    // const deadwoodLength = deadwoodHand.length;
     // remove straights from deadwood
     for (let j = 1; j < deadwoodHand.length - 1; j += 1) {
       // eslint-disable-next-line max-len
@@ -178,31 +179,39 @@ const getDeadwoodinHand = function (playersHand) {
         deadwoodHand.splice(j + 1, 1);
         deadwoodHand.splice(j, 1);
         deadwoodHand.splice(j - 1, 1);
+        j = 0;
       }
     }
+    console.log(`deadwoodhand ${i} after straights`, deadwoodHand);
 
-    // remove 3 of same card from deadwood (tally)
-    const cardNameTally = {};
-    const xOfAKind = [];
+    if (deadwoodHand.length > 0) {
+      // remove 3 of same card from deadwood (tally)
+      const cardNameTally = {};
+      const xOfAKind = [];
 
-    for (let k = 0; k < deadwoodHand.length; k += 1) {
-      const cardName = deadwoodHand[k].name;
-      if (cardName in cardNameTally) {
-        cardNameTally[cardName] += 1;
-        if (cardNameTally[cardName] === 3) {
-          xOfAKind.push(cardName);
+      for (let k = 0; k < deadwoodHand.length; k += 1) {
+        const cardName = deadwoodHand[k].name;
+        if (cardName in cardNameTally) {
+          cardNameTally[cardName] += 1;
+          if (cardNameTally[cardName] === 3) {
+            xOfAKind.push(cardName);
+          }
+        }
+        else {
+          cardNameTally[cardName] = 1;
         }
       }
-      else {
-        cardNameTally[cardName] = 1;
-      }
-    }
 
-    for (let l = 0; l < xOfAKind.length; l += 1) {
-      const deadwoodLength = deadwoodHand.length;
-      for (let m = 0; m < deadwoodLength; m += 1) {
-        if (deadwoodHand[m].name === xOfAKind[l]) {
-          deadwoodHand.splice(m, 1);
+      console.log(`deadwoodhand ${i}`, deadwoodHand);
+
+      for (let l = 0; l < xOfAKind.length; l += 1) {
+        // const updatedDeadwoodLength = deadwoodHand.length;
+        for (let m = 0; m < deadwoodHand.length; m += 1) {
+          // console.log(`deadwoodhand ${m}`, deadwoodHand);
+          if (deadwoodHand[m].name === xOfAKind[l]) {
+            deadwoodHand.splice(m, 1);
+            m = 0;
+          }
         }
       }
     }
