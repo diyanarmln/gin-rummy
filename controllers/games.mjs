@@ -165,56 +165,105 @@ const dealPlayerCards = function (deck) {
  * @returns
  */
 const getDeadwoodinHand = function (playersHand) {
-  // playersHand [[{}, {},], [{}, {},]]
   const deadwoodHands = [];
 
   for (let i = 0; i < playersHand.length; i += 1) {
-    const hand = playersHand[i]; // [{},{}]
-    const deadwoodHand = hand.map((a) => ({ ...a }));
-    // const deadwoodLength = deadwoodHand.length;
-    // remove straights from deadwood
-    for (let j = 1; j < deadwoodHand.length - 1; j += 1) {
-      // eslint-disable-next-line max-len
-      if ((deadwoodHand[j].rank === deadwoodHand[j - 1].rank + 1) && (deadwoodHand[j].rank === deadwoodHand[j + 1].rank - 1)) {
-        deadwoodHand.splice(j + 1, 1);
-        deadwoodHand.splice(j, 1);
-        deadwoodHand.splice(j - 1, 1);
-        j = 0;
+    const playerHand = playersHand[i]; // [{},{}]
+    const hand = playerHand.map((a) => ({ ...a }));
+    // console.log(hand);
+    // remove 3 of same card from deadwood (tally)
+    const cardNameTally = {};
+    const xOfAKind = [];
+
+    for (let j = 0; j < hand.length; j += 1) {
+      const cardName = hand[j].name;
+      if (cardName in cardNameTally) {
+        cardNameTally[cardName] += 1;
+        if (cardNameTally[cardName] === 3) {
+          xOfAKind.push(cardName);
+        }
+      }
+      else {
+        cardNameTally[cardName] = 1;
       }
     }
-    console.log(`deadwoodhand ${i} after straights`, deadwoodHand);
 
-    if (deadwoodHand.length > 0) {
-      // remove 3 of same card from deadwood (tally)
-      const cardNameTally = {};
-      const xOfAKind = [];
+    let deadwoodHand = [];
 
-      for (let k = 0; k < deadwoodHand.length; k += 1) {
-        const cardName = deadwoodHand[k].name;
-        if (cardName in cardNameTally) {
-          cardNameTally[cardName] += 1;
-          if (cardNameTally[cardName] === 3) {
-            xOfAKind.push(cardName);
-          }
-        }
-        else {
-          cardNameTally[cardName] = 1;
-        }
-      }
-
-      console.log(`deadwoodhand ${i}`, deadwoodHand);
-
-      for (let l = 0; l < xOfAKind.length; l += 1) {
-        // const updatedDeadwoodLength = deadwoodHand.length;
-        for (let m = 0; m < deadwoodHand.length; m += 1) {
-          // console.log(`deadwoodhand ${m}`, deadwoodHand);
-          if (deadwoodHand[m].name === xOfAKind[l]) {
-            deadwoodHand.splice(m, 1);
-            m = 0;
-          }
+    for (let k = 0; k < xOfAKind.length; k += 1) {
+      for (let l = 0; l < hand.length; l += 1) {
+        if (!(hand[l].name === xOfAKind[k])) {
+          deadwoodHand.push(hand[l]);
+          // xOfAKind[k] -= 1;
+        } else {
+          hand.splice(l, 1);
+          l = 0;
         }
       }
     }
+
+    console.log(cardNameTally, xOfAKind);
+    console.log(deadwoodHand.length);
+
+    let counter = 0;
+    for (let m = 1; m < hand.length; m += 1) {
+      console.log(m, hand[m].rank, counter);
+      //
+      if (hand[m].rank - hand[m - 1].rank === 1 && m === hand.length - 1 && counter === 0) {
+        deadwoodHand.push(hand[m - 2]);
+        deadwoodHand.push(hand[m - 1]);
+        deadwoodHand.push(hand[m]);
+        counter = 0;
+      }
+      else if (hand[m].rank - hand[m - 1].rank === 1) {
+        counter += 1;
+      }
+      else if (hand[m].rank - hand[m - 1].rank > 1) {
+        // if (counter === 0 && m === 1) {
+        //   deadwoodHand.push(hand[m - 1]);
+        //   counter = 0;
+        // }
+        // else
+        if (counter === 0 && m === hand.length - 1) {
+          deadwoodHand.push(hand[m]);
+          deadwoodHand.push(hand[m - 1]);
+          counter = 0;
+        }
+        else if (counter === 0) {
+          deadwoodHand.push(hand[m - 1]);
+          counter = 0;
+        }
+        else if (counter === 1 && m === hand.length - 1) {
+          deadwoodHand.push(hand[m - 2]);
+          deadwoodHand.push(hand[m - 1]);
+          deadwoodHand.push(hand[m]);
+          counter = 0;
+        }
+        else if (counter === 1) {
+          deadwoodHand.push(hand[m - 2]);
+          deadwoodHand.push(hand[m - 1]);
+          counter = 0;
+        }
+        else if (counter >= 2) {
+          deadwoodHand.push(hand[m]);
+          counter = 0;
+        }
+      }
+    }
+
+    // const set = new Set();
+
+    // deadwoodHand.filter((el) => {
+    //   const duplicate = set.has(el.rank);
+    //   set.add(el.rank);
+    //   return !duplicate;
+    // });
+
+    deadwoodHand = deadwoodHand.filter((value, index, self) => index === self.findIndex((t) => (
+      t.rank === value.rank
+    )));
+
+    console.log('end deadwood', deadwoodHand.length);
 
     sortHandBy(deadwoodHand, 'deadwoodValue');
     deadwoodHands.push(deadwoodHand);
@@ -362,12 +411,13 @@ const autoDiscardFromDeadwood = async function (game, playersHandIndex) {
   sortHandBy(playerHand, 'rank');
   const { discardPile } = game.gameState.round;
 
-  const playersDeadwoodList = getDeadwoodinHand(playersHand);
+  let playersDeadwoodList = getDeadwoodinHand(playersHand);
   const deadwoodHand = playersDeadwoodList[computer];
   const isHighestDeadwood = deadwoodHand[deadwoodHand.length - 1];
   const cardIndexToDiscardFromHand = findCardIndex(playerHand, isHighestDeadwood.rank);
   const discardedCard = playerHand.splice(cardIndexToDiscardFromHand, 1)[0];
   discardPile.push(discardedCard);
+  playersDeadwoodList = getDeadwoodinHand(playersHand);
   const playersDeadwoodValue = getDeadwoodSum(playersDeadwoodList);
   const discardPileToShow = discardPile[discardPile.length - 1];
 
